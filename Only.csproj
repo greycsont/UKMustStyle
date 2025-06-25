@@ -1,0 +1,104 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>Only</AssemblyName>
+    <Description>My first plugin</Description>
+    <Version>0.0.1</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+
+  
+
+  <!-- Game's instruction set -->
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(ManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(ManagedDir)\Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine">
+      <HintPath>$(ManagedDir)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(ManagedDir)\UnityEngine.AudioModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(ManagedDir)\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>$(ManagedDir)\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>$(ManagedDir)\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(ManagedDir)\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>$(ManagedDir)\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <private>false</private>
+    </Reference>
+
+    <Reference Include="Unity.Addressables">
+      <HintPath>$(ManagedDir)\Unity.Addressables.dll</HintPath>
+      <private>false</private>
+    </Reference>
+  </ItemGroup>
+
+
+
+  <PropertyGroup>
+    <ManagedDir>E:\SteamLibrary\steamapps\common\ULTRAKILL\ULTRAKILL_Data\Managed</ManagedDir>
+  </PropertyGroup>
+
+  <!-- Add beplnex and Harmony packet -->
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="HarmonyX" Version="2.10.2" />
+    <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!--<OutputPath>$(SolutionDir)BuildOutput\</OutputPath>-->
+    <OutputPath>E:\SteamLibrary\steamapps\common\ULTRAKILL\BepInEx\plugins\Only</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+	
+  <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>E:\SteamLibrary\steamapps\common\ULTRAKILL\ULTRAKILL.exe</StartProgram>
+    <StartWorkingDirectory>E:\SteamLibrary\steamapps\common\ULTRAKILL</StartWorkingDirectory>
+  </PropertyGroup>
+	
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+</Project>
