@@ -9,13 +9,13 @@ namespace Only;
 /*[HarmonyPatch(typeof(Statue), "GetHurt")]
 public static class StatusGetHurtPatch
 {
-    public static void Prefix(GameObject target,
-                              Vector3 force,
-                              float multiplier,
-                              float critMultiplier,
-                              Vector3 hurtPos,
-                              GameObject sourceWeapon,
-                              bool fromExplosion,
+    public static void Prefix(ref GameObject target,
+                              ref Vector3 force,
+                              ref float multiplier,
+                              ref float critMultiplier,
+                              ref Vector3 hurtPos,
+                              ref GameObject sourceWeapon,
+                              ref bool fromExplosion,
                               Statue __instance)
     {
         // Access private variables

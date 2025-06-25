@@ -11,12 +11,12 @@ namespace Only;
 public static class ZombieGetHurtPatch
 {
     public static bool Prefix(ref GameObject target,
-                       ref Vector3 force,
-                       ref float multiplier,
-                       ref float critMultiplier,
-                       ref GameObject sourceWeapon,
-                       ref bool fromExplosion,
-                       Zombie __instance
+                              ref Vector3 force,
+                              ref float multiplier,
+                              ref float critMultiplier,
+                              ref GameObject sourceWeapon,
+                              ref bool fromExplosion,
+                              Zombie __instance
     )
     {
         // Access private variable
