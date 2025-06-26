@@ -1,0 +1,9 @@
+{
+    "name": "",
+    "version_number": "0.0.1",
+    "website_url": "https://github.com/greycsont/GreyAnnouncer",
+    "description": "It Seems Like There's A Secret Command To Becoming Happy",
+    "dependencies": [
+        "BepInEx-BepInExPack-5.4.2100"
+    ]
+}

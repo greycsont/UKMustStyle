@@ -6,10 +6,10 @@ using ULTRAKILL.Cheats;
 namespace Only;
 
 
-/*[HarmonyPatch(typeof(Statue), "GetHurt")]
+[HarmonyPatch(typeof(Statue), "GetHurt")]
 public static class StatusGetHurtPatch
 {
-    public static void Prefix(ref GameObject target,
+    public static bool Prefix(ref GameObject target,
                               ref Vector3 force,
                               ref float multiplier,
                               ref float critMultiplier,
@@ -18,6 +18,13 @@ public static class StatusGetHurtPatch
                               ref bool fromExplosion,
                               Statue __instance)
     {
+        if (RankChecker.IsRanked())
+        {
+            return true;
+        }
+
+
+
         // Access private variables
         var eidField = AccessTools.Field(typeof(Statue), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
@@ -34,8 +41,24 @@ public static class StatusGetHurtPatch
         var gzField = AccessTools.Field(typeof(Statue), "gz");
         var gz = gzField.GetValue(__instance) as GoreZone;
 
+        var gcField = AccessTools.Field(typeof(Statue), "gc");
+        var gc = gcField.GetValue(__instance) as GroundCheck;
+
         var nohealField = AccessTools.Field(typeof(Statue), "noheal");
         var noheal = nohealField.GetValue(__instance) as bool? ?? false;
+
+        var parryFramesLeftField = AccessTools.Field(typeof(Statue), "parryFramesLeft");
+        var parryFramesLeft = parryFramesLeftField.GetValue(__instance) as int? ?? 0;
+
+        var parryFramesOnPartialField = AccessTools.Field(typeof(Statue), "parryFramesOnPartial");
+        var parryFramesOnPartial = parryFramesOnPartialField.GetValue(__instance) as bool? ?? false;
+
+
+        var audField = AccessTools.Field(typeof(Statue), "aud");
+        var aud = audField.GetValue(__instance) as AudioSource;
+
+        var scalcField = AccessTools.Field(typeof(Statue), "scalc");
+        var scalc = scalcField.GetValue(__instance) as StyleCalculator;
 
         // Method Start
         string hitLimb = "";
@@ -46,11 +69,11 @@ public static class StatusGetHurtPatch
         float num = __instance.health;
         if (massDying)
         {
-            return;
+            return false;
         }
         if (eid == null)
         {
-            return;
+            return false;
         }
         float num2;
         if (target.gameObject.CompareTag("Head"))
@@ -256,7 +279,7 @@ public static class StatusGetHurtPatch
         if (eid && eid.hitter == "punch")
         {
             bool flag3 = __instance.parryables != null && __instance.parryables.Count > 0 && __instance.parryables.Contains(target.transform);
-            if (__instance.parryable || (__instance.partiallyParryable && (flag3 || (this.parryFramesLeft > 0 && this.parryFramesOnPartial))))
+            if (__instance.parryable || (__instance.partiallyParryable && (flag3 || (parryFramesLeft > 0 && parryFramesOnPartial))))
             {
                 __instance.parryable = false;
                 __instance.partiallyParryable = false;
@@ -274,32 +297,32 @@ public static class StatusGetHurtPatch
             }
             else
             {
-                this.parryFramesOnPartial = flag3;
-                this.parryFramesLeft = MonoSingleton<FistControl>.Instance.currentPunch.activeFrames;
+                parryFramesOnPartialField.SetValue(__instance, flag3);
+                parryFramesLeftField.SetValue(__instance, MonoSingleton<FistControl>.Instance.currentPunch.activeFrames);
             }
         }
-        if (flag2 && (num2 >= 1f || (this.eid.hitter == "shotgun" && Random.Range(0f, 1f) > 0.5f) || (this.eid.hitter == "nail" && Random.Range(0f, 1f) > 0.85f)))
+        if (flag2 && (num2 >= 1f || (eid.hitter == "shotgun" && Random.Range(0f, 1f) > 0.5f) || (eid.hitter == "nail" && Random.Range(0f, 1f) > 0.85f)))
         {
-            if (this.extraDamageMultiplier >= 2f)
+            if (__instance.extraDamageMultiplier >= 2f)
             {
-                gameObject = this.bsm.GetGore(GoreType.Head, this.eid, fromExplosion);
+                gameObject = bsm.GetGore(GoreType.Head, eid, fromExplosion);
             }
             else
             {
-                gameObject = this.bsm.GetGore(GoreType.Limb, this.eid, fromExplosion);
+                gameObject = bsm.GetGore(GoreType.Limb, eid, fromExplosion);
             }
             if (gameObject)
             {
                 gameObject.transform.position = target.transform.position;
-                if (this.gz != null && this.gz.goreZone != null)
+                if (gz != null && gz.goreZone != null)
                 {
-                    gameObject.transform.SetParent(this.gz.goreZone, true);
+                    gameObject.transform.SetParent(gz.goreZone, true);
                 }
                 Bloodsplatter component3 = gameObject.GetComponent<Bloodsplatter>();
                 if (component3)
                 {
                     ParticleSystem.CollisionModule collision2 = component3.GetComponent<ParticleSystem>().collision;
-                    if (this.eid.hitter == "shotgun" || this.eid.hitter == "shotgunzone" || this.eid.hitter == "explosion")
+                    if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone" || eid.hitter == "explosion")
                     {
                         if (Random.Range(0f, 1f) > 0.5f)
                         {
@@ -307,87 +330,88 @@ public static class StatusGetHurtPatch
                         }
                         component3.hpAmount = 3;
                     }
-                    else if (this.eid.hitter == "nail")
+                    else if (eid.hitter == "nail")
                     {
                         component3.hpAmount = 1;
                         component3.GetComponent<AudioSource>().volume *= 0.8f;
                     }
-                    if (!this.noheal)
+                    if (!noheal)
                     {
                         component3.GetReady();
                     }
                 }
             }
         }
-        if (this.health > 0f && this.hurtSounds.Length != 0 && !this.eid.blessed)
+        if (__instance.health > 0f && __instance.hurtSounds.Length != 0 && !eid.blessed)
         {
-            if (this.aud == null)
+            if (aud == null)
             {
-                this.aud = base.GetComponent<AudioSource>();
+                aud = __instance.GetComponent<AudioSource>();
             }
-            this.aud.clip = this.hurtSounds[Random.Range(0, this.hurtSounds.Length)];
-            this.aud.volume = 0.75f;
-            this.aud.pitch = Random.Range(0.85f, 1.35f);
-            this.aud.priority = 12;
-            this.aud.Play();
+            aud.clip = __instance.hurtSounds[Random.Range(0, __instance.hurtSounds.Length)];
+            aud.volume = 0.75f;
+            aud.pitch = Random.Range(0.85f, 1.35f);
+            aud.priority = 12;
+            aud.Play();
         }
-        if (multiplier == 0f || this.eid.puppet)
+        if (multiplier == 0f || eid.puppet)
         {
             flag = false;
         }
-        if (flag && this.eid.hitter != "enemy")
+        if (flag && eid.hitter != "enemy")
         {
-            if (this.scalc == null)
+            if (scalc == null)
             {
-                this.scalc = MonoSingleton<StyleCalculator>.Instance;
+                scalc = MonoSingleton<StyleCalculator>.Instance;
             }
-            MinosArm component4 = base.GetComponent<MinosArm>();
-            if (this.health <= 0f && !component4)
+            MinosArm component4 = __instance.GetComponent<MinosArm>();
+            if (__instance.health <= 0f && !component4)
             {
                 dead = true;
-                if (this.gc && !this.gc.onGround && !this.eid.flying)
+                if (gc && !gc.onGround && !eid.flying)
                 {
-                    if (this.eid.hitter == "explosion" || this.eid.hitter == "ffexplosion" || this.eid.hitter == "railcannon")
+                    if (eid.hitter == "explosion" || eid.hitter == "ffexplosion" || eid.hitter == "railcannon")
                     {
-                        this.scalc.shud.AddPoints(120, "ultrakill.fireworks", sourceWeapon, this.eid, -1, "", "");
+                        scalc.shud.AddPoints(120, "ultrakill.fireworks", sourceWeapon, eid, -1, "", "");
                     }
-                    else if (this.eid.hitter == "ground slam")
+                    else if (eid.hitter == "ground slam")
                     {
-                        this.scalc.shud.AddPoints(160, "ultrakill.airslam", sourceWeapon, this.eid, -1, "", "");
+                        scalc.shud.AddPoints(160, "ultrakill.airslam", sourceWeapon, eid, -1, "", "");
                     }
-                    else if (this.eid.hitter != "deathzone")
+                    else if (eid.hitter != "deathzone")
                     {
-                        this.scalc.shud.AddPoints(50, "ultrakill.airshot", sourceWeapon, this.eid, -1, "", "");
+                        scalc.shud.AddPoints(50, "ultrakill.airshot", sourceWeapon, eid, -1, "", "");
                     }
                 }
             }
-            if (this.eid.hitter != "secret" && this.scalc)
+            if (eid.hitter != "secret" && scalc)
             {
-                this.scalc.HitCalculator(this.eid.hitter, "spider", hitLimb, dead, this.eid, sourceWeapon);
+                scalc.HitCalculator(eid.hitter, "spider", hitLimb, dead, eid, sourceWeapon);
             }
         }
-        if ((this.woundedMaterial || this.woundedModel) && num >= this.originalHealth / 2f && this.health < this.originalHealth / 2f)
+        if ((__instance.woundedMaterial || __instance.woundedModel) && num >= __instance.originalHealth / 2f && __instance.health < __instance.originalHealth / 2f)
         {
-            if (this.woundedParticle)
+            if (__instance.woundedParticle)
             {
-                Object.Instantiate<GameObject>(this.woundedParticle, this.chest.transform.position, Quaternion.identity);
+                Object.Instantiate<GameObject>(__instance.woundedParticle, __instance.chest.transform.position, Quaternion.identity);
             }
-            if (!this.eid.puppet)
+            if (!eid.puppet)
             {
-                if (this.woundedModel)
+                if (__instance.woundedModel)
                 {
-                    this.woundedModel.SetActive(true);
-                    this.smr.gameObject.SetActive(false);
-                    return;
+                    __instance.woundedModel.SetActive(true);
+                    __instance.smr.gameObject.SetActive(false);
+                    return false;
                 }
-                this.smr.material = this.woundedMaterial;
+                __instance.smr.material = __instance.woundedMaterial;
                 EnemySimplifier enemySimplifier;
-                if (this.smr.TryGetComponent<EnemySimplifier>(out enemySimplifier))
+                if (__instance.smr.TryGetComponent<EnemySimplifier>(out enemySimplifier))
                 {
-                    enemySimplifier.ChangeMaterialNew(EnemySimplifier.MaterialState.normal, this.woundedMaterial);
-                    enemySimplifier.ChangeMaterialNew(EnemySimplifier.MaterialState.enraged, this.woundedEnrageMaterial);
+                    enemySimplifier.ChangeMaterialNew(EnemySimplifier.MaterialState.normal, __instance.woundedMaterial);
+                    enemySimplifier.ChangeMaterialNew(EnemySimplifier.MaterialState.enraged, __instance.woundedEnrageMaterial);
                 }
             }
         }
+        return false;
     }
-}*/
+}

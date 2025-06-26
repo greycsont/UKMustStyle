@@ -19,8 +19,14 @@ public static class ZombieGetHurtPatch
                               Zombie __instance
     )
     {
+        if (RankChecker.IsRanked())
+        {
+            return true;
+        }
+
+
         // Access private variable
-        var eidField = AccessTools.Field(typeof(Zombie), "eid");
+            var eidField = AccessTools.Field(typeof(Zombie), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
 
         var gcField = AccessTools.Field(typeof(Zombie), "gc");
@@ -104,7 +110,7 @@ public static class ZombieGetHurtPatch
             }
             else
             {
-                parryFramesLeft = MonoSingleton<FistControl>.Instance.currentPunch.activeFrames;
+                parryFramesLeftField.SetValue(__instance, MonoSingleton<FistControl>.Instance.currentPunch.activeFrames);
             }
         }
         if (target.gameObject.CompareTag("Head"))

@@ -14,10 +14,16 @@ public static class SpiderGetHurtPatch
                               ref Vector3 force,
                               ref Vector3 hitPoint,
                               ref float multiplier,
-                              GameObject sourceWeapon,
+                              ref GameObject sourceWeapon,
                               SpiderBody __instance
     )
     {
+        if (RankChecker.IsRanked())
+        {
+            return true;
+        }
+
+
         // Access private variable
         var eidField = AccessTools.Field(typeof(SpiderBody), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
@@ -124,6 +130,7 @@ public static class SpiderGetHurtPatch
             }
             if (scalc == null)
             {
+                // If it follow the original code it will initialize once again(
                 scalc = MonoSingleton<StyleCalculator>.Instance;
             }
             if (__instance.health <= 0f)
@@ -134,7 +141,7 @@ public static class SpiderGetHurtPatch
             {
                 if (parryable)
                 {
-                    parryable = false;
+                    parryableField.SetValue(__instance, false);
                     MonoSingleton<FistControl>.Instance.currentPunch.Parry(false, eid, "");
                     currentExplosion = Object.Instantiate<GameObject>(beamExplosion.ToAsset(), __instance.transform.position, Quaternion.identity);
                     if (!InvincibleEnemies.Enabled && !eid.blessed)
@@ -155,11 +162,11 @@ public static class SpiderGetHurtPatch
                         __instance.Invoke("StopWaiting", 1f);
                         Object.Destroy(__instance.currentCE);
                     }
-                    parryFramesLeft = 0;
+                    parryFramesLeftField.SetValue(__instance, 0);
                 }
                 else
                 {
-                    parryFramesLeft = MonoSingleton<FistControl>.Instance.currentPunch.activeFrames;
+                    parryFramesLeftField.SetValue(__instance, MonoSingleton<FistControl>.Instance.currentPunch.activeFrames);
                 }
             }
             if (multiplier != 0f)
