@@ -17,7 +17,7 @@ public static class SpiderGetHurtPatch
                               ref GameObject sourceWeapon,
                               SpiderBody __instance
     )
-    {
+    {       
         if (RankChecker.IsRanked())
         {
             return true;
@@ -49,7 +49,7 @@ public static class SpiderGetHurtPatch
         var parryFramesLeftField = AccessTools.Field(typeof(SpiderBody), "parryFramesLeft");
         var parryFramesLeft = parryFramesLeftField.GetValue(__instance) as int?;
 
-        var maxHealthField = AccessTools.Field(typeof(Zombie), "maxHealth");
+        var maxHealthField = AccessTools.Field(typeof(SpiderBody), "maxHealth");
         var maxHealth = maxHealthField.GetValue(__instance) as float?;
 
         var ensimsField = AccessTools.Field(typeof(SpiderBody), "ensims");
