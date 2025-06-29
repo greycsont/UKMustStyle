@@ -10,9 +10,7 @@ public static class RankChecker
     {
         try
         {
-            var rankIndex = global::StyleHUD.Instance.rankIndex;
-            Plugin.Log.LogInfo($"Current rank index: {rankIndex}");
-            return rankIndex > 4;
+            return global::StyleHUD.Instance.rankIndex > 4;
         }
         catch(Exception e)
         {

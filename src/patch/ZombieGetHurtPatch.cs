@@ -7,7 +7,7 @@ using ULTRAKILL.Cheats;
 namespace Only;
 
 
-[HarmonyPatch(typeof(Zombie), "GetHurt")]
+[HarmonyPatch(typeof(Zombie), nameof(Zombie.GetHurt))]
 public static class ZombieGetHurtPatch
 {
     public static bool Prefix(ref GameObject target,
@@ -26,7 +26,7 @@ public static class ZombieGetHurtPatch
 
 
         // Access private variable
-            var eidField = AccessTools.Field(typeof(Zombie), "eid");
+        var eidField = AccessTools.Field(typeof(Zombie), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
 
         var gcField = AccessTools.Field(typeof(Zombie), "gc");

@@ -7,7 +7,7 @@ using ULTRAKILL.Cheats;
 namespace Only;
 
 //部分 private数据要访问并修改
-[HarmonyPatch(typeof(SpiderBody), "GetHurt")]
+[HarmonyPatch(typeof(SpiderBody), nameof(SpiderBody.GetHurt))]
 public static class SpiderGetHurtPatch
 {
     public static bool Prefix(ref GameObject target,

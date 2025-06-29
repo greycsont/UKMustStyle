@@ -6,7 +6,7 @@ using ULTRAKILL.Cheats;
 namespace Only;
 
 
-[HarmonyPatch(typeof(Statue), "GetHurt")]
+[HarmonyPatch(typeof(Statue), nameof(Statue.GetHurt))]
 public static class StatusGetHurtPatch
 {
     public static bool Prefix(ref GameObject target,
@@ -42,7 +42,7 @@ public static class StatusGetHurtPatch
         var gz = gzField.GetValue(__instance) as GoreZone;
 
         var gcField = AccessTools.Field(typeof(Statue), "gc");
-        var gc = gcField.GetValue(__instance) as GroundCheck;
+        var gc = gcField.GetValue(__instance) as GroundCheckEnemy;
 
         var nohealField = AccessTools.Field(typeof(Statue), "noheal");
         var noheal = nohealField.GetValue(__instance) as bool? ?? false;
