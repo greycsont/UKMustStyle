@@ -5,7 +5,7 @@ using UnityEngine;
 
 using ULTRAKILL.Cheats;
 
-namespace MustStyle;
+namespace StyleGoRound;
 
 
 [HarmonyPatch(typeof(Drone), nameof(Drone.GetHurt))]

@@ -5,7 +5,7 @@ using ULTRAKILL.Cheats;
 using System;
 
 
-namespace MustStyle;
+namespace StyleGoRound;
 
 
 [HarmonyPatch(typeof(Machine), nameof(Machine.GetHurt))]

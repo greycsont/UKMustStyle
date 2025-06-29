@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 
-namespace MustStyle;
+namespace StyleGoRound;
 
 public static class RankChecker
 {

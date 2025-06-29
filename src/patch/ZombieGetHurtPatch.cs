@@ -5,7 +5,7 @@ using UnityEngine;
 using ULTRAKILL.Cheats;
 
 
-namespace MustStyle;
+namespace StyleGoRound;
 
 
 [HarmonyPatch(typeof(Zombie), nameof(Zombie.GetHurt))]

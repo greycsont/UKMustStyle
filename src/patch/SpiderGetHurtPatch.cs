@@ -5,7 +5,7 @@ using UnityEngine.AddressableAssets;
 
 using ULTRAKILL.Cheats;
 
-namespace MustStyle;
+namespace StyleGoRound;
 
 //部分 private数据要访问并修改
 [HarmonyPatch(typeof(SpiderBody), nameof(SpiderBody.GetHurt))]

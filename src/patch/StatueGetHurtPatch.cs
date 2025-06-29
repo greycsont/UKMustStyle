@@ -4,7 +4,7 @@ using UnityEngine;
 using ULTRAKILL.Cheats;
 using System;
 
-namespace MustStyle;
+namespace StyleGoRound;
 
 
 [HarmonyPatch(typeof(Statue), nameof(Statue.GetHurt))]

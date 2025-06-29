@@ -5,6 +5,8 @@ Due to the large scale of reflection used in this mod so...
 
 It's a bit laggy?
 
+`I don't patch 6 GetHurt() instead I patched 5 of them`
+
 ### Credits
 Thumbnail : 
 
@@ -17,15 +19,11 @@ FiraCode, used under SIL OFL (Open Font License) version 1.1
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Easter egg
-Description have 2 references:
+Name's reference : [Yooh - Goodbye,Merry-Go-Round.](https://www.youtube.com/watch?v=JKVBwxBkC6k)
 
-1.[BREaK!BREaK!BREaK! / HiTECH NINJA vs Cranky](https://www.youtube.com/watch?v=MfYLyadcF1g)
+Description's reference : [幸せになれる隠しコマンドがあるらしい / It Seems Like There's A Secret Command To Becoming Happy](https://www.youtube.com/watch?v=lwT4h6x3UM0)
 
-2.[MIGHTREYA](https://store.steampowered.com/app/3077640/MIGHTREYA/)
-
-`Made by Wazen, who was involved in DMC4SE`
-
-icon are copied from Freak Out Hr. / 雄之助 feat. POPY & ROSE
+icon are **copied** from Freak Out Hr. / 雄之助 feat. POPY & ROSE
 
 [link 1 to youtube](https://youtu.be/F0NVJIEak4I?si=1pVUjAcSGeetysPa)
 
