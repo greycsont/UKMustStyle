@@ -19,7 +19,7 @@ FiraCode, used under SIL OFL (Open Font License) version 1.1
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Easter egg
-Name's reference : [Yooh - Goodbye,Merry-Go-Round.](https://www.youtube.com/watch?v=JKVBwxBkC6k)
+Name's reference : [Yooh - Good bye,Merry-Go-Round.](https://www.youtube.com/watch?v=JKVBwxBkC6k)
 
 Description's reference : [幸せになれる隠しコマンドがあるらしい / It Seems Like There's A Secret Command To Becoming Happy](https://www.youtube.com/watch?v=lwT4h6x3UM0)
 
