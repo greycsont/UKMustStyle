@@ -1,3 +1,6 @@
+### Good bye,Style-Go-Round.
+`manifest.json name: Package names can only contain a-z A-Z 0-9 _ characters`
+
 ### What does it do?
 A idea directly copied from DmC's Must Style
 
