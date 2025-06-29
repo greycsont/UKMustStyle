@@ -6,7 +6,7 @@ using System.Reflection;
 using HarmonyLib;
 
 
-namespace Only;
+namespace MustStyle;
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 [BepInProcess("ULTRAKILL.exe")]

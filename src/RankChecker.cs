@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 
-namespace Only;
+namespace MustStyle;
 
 public static class RankChecker
 {
@@ -10,7 +10,7 @@ public static class RankChecker
     {
         try
         {
-            return global::StyleHUD.Instance.rankIndex > 4;
+            return global::StyleHUD.Instance.rankIndex > 3;
         }
         catch(Exception e)
         {

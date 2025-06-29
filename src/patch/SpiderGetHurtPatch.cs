@@ -1,10 +1,11 @@
+using System;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 using ULTRAKILL.Cheats;
 
-namespace Only;
+namespace MustStyle;
 
 //部分 private数据要访问并修改
 [HarmonyPatch(typeof(SpiderBody), nameof(SpiderBody.GetHurt))]
@@ -17,13 +18,34 @@ public static class SpiderGetHurtPatch
                               ref GameObject sourceWeapon,
                               SpiderBody __instance
     )
-    {       
-        if (RankChecker.IsRanked())
+    {
+        try
         {
-            return true;
+            if (RankChecker.IsRanked())
+            {
+                return true;
+            }
+
+            AdjustedMethod(ref target, ref force, ref hitPoint, ref multiplier, ref sourceWeapon, __instance);
+
+            return false;
+        }
+        catch (Exception e)
+        {
+            Plugin.Log.LogError($"Error in SpiderGetHurtPatch: {e.Message}\n{e.StackTrace}");
+            return true; // Allow the original method to run if an error occurs
         }
 
 
+    }
+    
+    public static void AdjustedMethod(ref GameObject target,
+                                      ref Vector3 force,
+                                      ref Vector3 hitPoint,
+                                      ref float multiplier,
+                                      ref GameObject sourceWeapon,
+                                      SpiderBody __instance)
+    {
         // Access private variable
         var eidField = AccessTools.Field(typeof(SpiderBody), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
@@ -72,7 +94,7 @@ public static class SpiderGetHurtPatch
         {
             if (!eid.sandified && !eid.blessed)
             {
-                GameObject gameObject = Object.Instantiate<GameObject>(MonoSingleton<BloodsplatterManager>.Instance.GetGore(GoreType.Small, eid, false), hitPoint, Quaternion.identity);
+                GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(MonoSingleton<BloodsplatterManager>.Instance.GetGore(GoreType.Small, eid, false), hitPoint, Quaternion.identity);
                 if (gameObject)
                 {
                     Bloodsplatter component = gameObject.GetComponent<Bloodsplatter>();
@@ -103,7 +125,7 @@ public static class SpiderGetHurtPatch
                 {
                     if (__instance.dripBlood != null)
                     {
-                        currentDrip = Object.Instantiate<GameObject>(__instance.dripBlood, hitPoint, Quaternion.identity);
+                        currentDrip = UnityEngine.Object.Instantiate<GameObject>(__instance.dripBlood, hitPoint, Quaternion.identity);
                     }
                     if (currentDrip)
                     {
@@ -119,7 +141,7 @@ public static class SpiderGetHurtPatch
             }
             else
             {
-                Object.Instantiate<GameObject>(MonoSingleton<BloodsplatterManager>.Instance.GetGore(GoreType.Small, eid, false), hitPoint, Quaternion.identity);
+                UnityEngine.Object.Instantiate<GameObject>(MonoSingleton<BloodsplatterManager>.Instance.GetGore(GoreType.Small, eid, false), hitPoint, Quaternion.identity);
             }
         }
         if (!eid.dead)
@@ -143,7 +165,7 @@ public static class SpiderGetHurtPatch
                 {
                     parryableField.SetValue(__instance, false);
                     MonoSingleton<FistControl>.Instance.currentPunch.Parry(false, eid, "");
-                    currentExplosion = Object.Instantiate<GameObject>(beamExplosion.ToAsset(), __instance.transform.position, Quaternion.identity);
+                    currentExplosion = UnityEngine.Object.Instantiate<GameObject>(beamExplosion.ToAsset(), __instance.transform.position, Quaternion.identity);
                     if (!InvincibleEnemies.Enabled && !eid.blessed)
                     {
                         //this.health -= (float)((this.parryFramesLeft > 0) ? 4 : 5) / this.eid.totalHealthModifier;
@@ -160,7 +182,7 @@ public static class SpiderGetHurtPatch
                     {
                         __instance.CancelInvoke("BeamFire");
                         __instance.Invoke("StopWaiting", 1f);
-                        Object.Destroy(__instance.currentCE);
+                        UnityEngine.Object.Destroy(__instance.currentCE);
                     }
                     parryFramesLeftField.SetValue(__instance, 0);
                 }
@@ -179,7 +201,7 @@ public static class SpiderGetHurtPatch
                 {
                     ensims = __instance.GetComponentsInChildren<EnemySimplifier>();
                 }
-                Object.Instantiate<GameObject>(__instance.woundedParticle, __instance.transform.position, Quaternion.identity);
+                UnityEngine.Object.Instantiate<GameObject>(__instance.woundedParticle, __instance.transform.position, Quaternion.identity);
                 if (!eid.puppet)
                 {
                     foreach (EnemySimplifier enemySimplifier in ensims)
@@ -194,12 +216,12 @@ public static class SpiderGetHurtPatch
             }
             if (__instance.hurtSound && num > 0f)
             {
-                __instance.hurtSound.PlayClipAtPoint(MonoSingleton<AudioMixerController>.Instance.goreGroup, __instance.transform.position, 12, 1f, 0.75f, Random.Range(0.85f, 1.35f), AudioRolloffMode.Linear, 1f, 100f);
+                __instance.hurtSound.PlayClipAtPoint(MonoSingleton<AudioMixerController>.Instance.goreGroup, __instance.transform.position, 12, 1f, 0.75f, UnityEngine.Random.Range(0.85f, 1.35f), AudioRolloffMode.Linear, 1f, 100f);
             }
             if (__instance.health <= 0f && !eid.dead)
             {
                 __instance.Die();
-                return false;
+                return;
             }
         }
         else if (eid.hitter == "ground slam")
@@ -207,6 +229,6 @@ public static class SpiderGetHurtPatch
             __instance.BreakCorpse();
         }
 
-        return false;
+        return;
     }
 }

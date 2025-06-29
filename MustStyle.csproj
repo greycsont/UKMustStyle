@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>Only</AssemblyName>
-    <Description>My first plugin</Description>
+    <AssemblyName>MustStyle</AssemblyName>
+    <Description>Idea directly copied from DmC</Description>
     <Version>0.0.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
@@ -71,7 +71,7 @@
 
   <PropertyGroup>
     <!--<OutputPath>$(SolutionDir)BuildOutput\</OutputPath>-->
-    <OutputPath>E:\SteamLibrary\steamapps\common\ULTRAKILL\BepInEx\plugins\Only</OutputPath>
+    <OutputPath>E:\SteamLibrary\steamapps\common\ULTRAKILL\BepInEx\plugins\MustStyle</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 	

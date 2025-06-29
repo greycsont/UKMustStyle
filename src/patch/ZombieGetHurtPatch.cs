@@ -1,10 +1,11 @@
+using System;
 using HarmonyLib;
 using UnityEngine;
 
 using ULTRAKILL.Cheats;
 
 
-namespace Only;
+namespace MustStyle;
 
 
 [HarmonyPatch(typeof(Zombie), nameof(Zombie.GetHurt))]
@@ -19,12 +20,34 @@ public static class ZombieGetHurtPatch
                               Zombie __instance
     )
     {
-        if (RankChecker.IsRanked())
+        try
         {
+            if (RankChecker.IsRanked())
+            {
+                return true;
+            }
+
+            AdjustedMethod(ref target, ref force, ref multiplier, ref critMultiplier, ref sourceWeapon, ref fromExplosion, __instance);
+
+            return false;
+        }
+        catch (Exception e)
+        {
+            Plugin.Log.LogError("Error checking rank: " + e.Message);
             return true;
         }
 
+    }
 
+    public static void AdjustedMethod(ref GameObject target,
+                                      ref Vector3 force,
+                                      ref float multiplier,
+                                      ref float critMultiplier,
+                                      ref GameObject sourceWeapon,
+                                      ref bool fromExplosion,
+                                      Zombie __instance
+    )
+    {
         // Access private variable
         var eidField = AccessTools.Field(typeof(Zombie), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
@@ -350,7 +373,7 @@ public static class ZombieGetHurtPatch
                 ParticleSystem.CollisionModule collision = component.GetComponent<ParticleSystem>().collision;
                 if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone" || eid.hitter == "explosion")
                 {
-                    if (Random.Range(0f, 1f) > 0.5f)
+                    if (UnityEngine.Random.Range(0f, 1f) > 0.5f)
                     {
                         collision.enabled = false;
                     }
@@ -392,21 +415,21 @@ public static class ZombieGetHurtPatch
                                     enemyIdentifierIdentifier.SetupForHellBath();
                                 }
                                 characterJoint.transform.SetParent(gz.transform);
-                                Object.Destroy(characterJoint);
+                                UnityEngine.Object.Destroy(characterJoint);
                             }
                         }
                         CharacterJoint component2 = target.GetComponent<CharacterJoint>();
                         if (component2 != null)
                         {
                             component2.connectedBody = null;
-                            Object.Destroy(component2);
+                            UnityEngine.Object.Destroy(component2);
                         }
                         target.transform.position = child.position;
                         target.transform.SetParent(child);
                         child.SetParent(gz.transform, true);
-                        Object.Destroy(target.GetComponent<Rigidbody>());
+                        UnityEngine.Object.Destroy(target.GetComponent<Rigidbody>());
                     }
-                    Object.Destroy(target.GetComponent<Collider>());
+                    UnityEngine.Object.Destroy(target.GetComponent<Collider>());
                     target.transform.localScale = Vector3.zero;
                     target.gameObject.SetActive(false);
                 }
@@ -419,9 +442,9 @@ public static class ZombieGetHurtPatch
         }
         if (__instance.health > 0f && !__instance.limp && __instance.hurtSounds.Length != 0 && !eid.blessed && eid.hitter != "blocked")
         {
-            aud.clip = __instance.hurtSounds[Random.Range(0, __instance.hurtSounds.Length)];
+            aud.clip = __instance.hurtSounds[UnityEngine.Random.Range(0, __instance.hurtSounds.Length)];
             aud.volume = __instance.hurtSoundVol;
-            aud.pitch = Random.Range(0.85f, 1.35f);
+            aud.pitch = UnityEngine.Random.Range(0.85f, 1.35f);
             aud.priority = 12;
             aud.Play();
         }
@@ -472,6 +495,6 @@ public static class ZombieGetHurtPatch
             }
         }
 
-        return false;
+        return;
     }
 }

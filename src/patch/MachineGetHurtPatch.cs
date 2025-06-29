@@ -2,9 +2,10 @@ using UnityEngine;
 using System.Reflection;
 using HarmonyLib;
 using ULTRAKILL.Cheats;
+using System;
 
 
-namespace Only;
+namespace MustStyle;
 
 
 [HarmonyPatch(typeof(Machine), nameof(Machine.GetHurt))]
@@ -18,12 +19,32 @@ public static class MachineGetHurtPatch
                               ref bool fromExplosion,
                               Machine __instance)
     {
-        if (RankChecker.IsRanked())
+        try
         {
+            if (RankChecker.IsRanked())
+            {
+                return true;
+            }
+
+            AdjustedMethod(ref target, ref force, ref multiplier, ref critMultiplier, ref sourceWeapon, ref fromExplosion, __instance);
+
+            return false;
+        }
+        catch (Exception e)
+        {
+            Plugin.Log.LogError($"Error in MachineGetHurtPatch: {e.Message}\n{e.StackTrace}");
             return true;
         }
+    }
 
-        // Access private variables
+    public static void AdjustedMethod(ref GameObject target,
+                                      ref Vector3 force,
+                                      ref float multiplier,
+                                      ref float critMultiplier,
+                                      ref GameObject sourceWeapon,
+                                      ref bool fromExplosion,
+                                      Machine __instance)
+    {
         var eidField = AccessTools.Field(typeof(Machine), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
 
@@ -123,7 +144,7 @@ public static class MachineGetHurtPatch
 
             // I don't think this can be seen as a damage event;
             __instance.Invoke("CanisterExplosion", 0.1f);
-            return false;
+            return;
         }
         if (tur != null && tur.aiming && (eid.hitter == "revolver" || eid.hitter == "coin") && tur.interruptables.Contains(target.transform))
         {
@@ -362,19 +383,19 @@ public static class MachineGetHurtPatch
                                         {
                                             enemyIdentifierIdentifier.SetupForHellBath();
                                         }
-                                        Object.Destroy(characterJoint);
+                                        UnityEngine.Object.Destroy(characterJoint);
                                     }
                                 }
                                 CharacterJoint component = target.GetComponent<CharacterJoint>();
                                 if (component != null)
                                 {
                                     component.connectedBody = null;
-                                    Object.Destroy(component);
+                                    UnityEngine.Object.Destroy(component);
                                 }
                                 target.transform.position = child.position;
                                 target.transform.SetParent(child);
                                 child.SetParent(gz.gibZone);
-                                Object.Destroy(target.GetComponent<Rigidbody>());
+                                UnityEngine.Object.Destroy(target.GetComponent<Rigidbody>());
                             }
                         }
                     }
@@ -424,7 +445,7 @@ public static class MachineGetHurtPatch
                         Collider obj;
                         if (target.TryGetComponent<Collider>(out obj))
                         {
-                            Object.Destroy(obj);
+                            UnityEngine.Object.Destroy(obj);
                         }
                         target.transform.localScale = Vector3.zero;
                     }
@@ -445,7 +466,7 @@ public static class MachineGetHurtPatch
                                         {
                                             enemyIdentifierIdentifier2.SetupForHellBath();
                                         }
-                                        Object.Destroy(characterJoint2);
+                                        UnityEngine.Object.Destroy(characterJoint2);
                                         characterJoint2.transform.parent = null;
                                     }
                                 }
@@ -507,7 +528,7 @@ public static class MachineGetHurtPatch
                 ParticleSystem.CollisionModule collision = component2.GetComponent<ParticleSystem>().collision;
                 if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone" || eid.hitter == "explosion")
                 {
-                    if (Random.Range(0f, 1f) > 0.5f)
+                    if (UnityEngine.Random.Range(0f, 1f) > 0.5f)
                     {
                         collision.enabled = false;
                     }
@@ -533,7 +554,7 @@ public static class MachineGetHurtPatch
             {
                 aud = __instance.GetComponent<AudioSource>();
             }
-            aud.clip = __instance.hurtSounds[Random.Range(0, __instance.hurtSounds.Length)];
+            aud.clip = __instance.hurtSounds[UnityEngine.Random.Range(0, __instance.hurtSounds.Length)];
             if (tur)
             {
                 aud.volume = 0.85f;
@@ -548,11 +569,11 @@ public static class MachineGetHurtPatch
             }
             if (sm != null)
             {
-                aud.pitch = Random.Range(0.85f, 1.35f);
+                aud.pitch = UnityEngine.Random.Range(0.85f, 1.35f);
             }
             else
             {
-                aud.pitch = Random.Range(0.9f, 1.1f);
+                aud.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
             }
             aud.priority = 12;
             aud.Play();
@@ -595,12 +616,12 @@ public static class MachineGetHurtPatch
                 if (__instance.bigKill)
                 {
                     scalc.HitCalculator(eid.hitter, "spider", hitLimb, dead, eid, sourceWeapon);
-                    return false;
+                    return;
                 }
                 scalc.HitCalculator(eid.hitter, "machine", hitLimb, dead, eid, sourceWeapon);
             }
         }
 
-        return false;
+        return;
     }
 }

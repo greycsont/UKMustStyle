@@ -3,30 +3,37 @@ A idea directly copied from DmC's Must Style
 
 Due to the large scale of reflection used in this mod so...
 
-It's pretty laggy I guess?
+It's a bit laggy?
+
+### Credits
+Thumbnail : 
+
+Krita, used under GNU General Public License (GPL) version 3
+
+FiraCode, used under SIL OFL (Open Font License) version 1.1
+
+3270font, used under [License](https://github.com/rbanffy/3270font/blob/main/LICENSE.txt)
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Easter egg
-icon are *inspired* from Freak Out Hr. / 雄之助 feat. POPY & ROSE
+Description have 2 references:
 
-[link 1 for youtube](https://youtu.be/F0NVJIEak4I?si=1pVUjAcSGeetysPa)
+1.[BREaK!BREaK!BREaK! / HiTECH NINJA vs Cranky](https://www.youtube.com/watch?v=MfYLyadcF1g)
 
-[link 2 for bilibili](https://www.bilibili.com/video/BV1hk4y1x7hb)
+2.[MIGHTREYA](https://store.steampowered.com/app/3077640/MIGHTREYA/)
+
+icon are *copied* from Freak Out Hr. / 雄之助 feat. POPY & ROSE
+
+[link 1 to youtube](https://youtu.be/F0NVJIEak4I?si=1pVUjAcSGeetysPa)
+
+[link 2 to bilibili](https://www.bilibili.com/video/BV1hk4y1x7hb)
 
 (I can't believe I said that compare the silly thumbnail I made)
 
 How it work?
 
 Copy sourcecode from ultrakill as prefix then modify it and return false to block original method.
-
-Fonts Used:
-
-FiraCode, used under SIL OFL (Open Font License) version 1.1
-
-3270font, used under [License](https://github.com/rbanffy/3270font/blob/main/LICENSE.txt)
-
-谱面100号wcnm
 
 <br><br><br><br><br><br><br>
 

@@ -2,8 +2,9 @@ using HarmonyLib;
 using UnityEngine;
 
 using ULTRAKILL.Cheats;
+using System;
 
-namespace Only;
+namespace MustStyle;
 
 
 [HarmonyPatch(typeof(Statue), nameof(Statue.GetHurt))]
@@ -18,13 +19,34 @@ public static class StatusGetHurtPatch
                               ref bool fromExplosion,
                               Statue __instance)
     {
-        if (RankChecker.IsRanked())
+        try
         {
+            if (RankChecker.IsRanked())
+            {
+                return true;
+            }
+
+            AdjustedMethod(ref target, ref force, ref multiplier, ref critMultiplier, ref hurtPos, ref sourceWeapon, ref fromExplosion, __instance);
+
+            return false;
+        }
+        catch (Exception e)
+        {
+            Plugin.Log.LogError("Error checking rank: " + e.Message);
             return true;
         }
 
+    }
 
-
+    public static void AdjustedMethod(ref GameObject target,
+                                      ref Vector3 force,
+                                      ref float multiplier,
+                                      ref float critMultiplier,
+                                      ref Vector3 hurtPos,
+                                      ref GameObject sourceWeapon,
+                                      ref bool fromExplosion,
+                                      Statue __instance)
+    {
         // Access private variables
         var eidField = AccessTools.Field(typeof(Statue), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
@@ -69,11 +91,11 @@ public static class StatusGetHurtPatch
         float num = __instance.health;
         if (massDying)
         {
-            return false;
+            return;
         }
         if (eid == null)
         {
-            return false;
+            return;
         }
         float num2;
         if (target.gameObject.CompareTag("Head"))
@@ -259,7 +281,7 @@ public static class StatusGetHurtPatch
                 ParticleSystem.CollisionModule collision = component2.GetComponent<ParticleSystem>().collision;
                 if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone" || eid.hitter == "explosion")
                 {
-                    if (Random.Range(0f, 1f) > 0.5f)
+                    if (UnityEngine.Random.Range(0f, 1f) > 0.5f)
                     {
                         collision.enabled = false;
                     }
@@ -301,7 +323,7 @@ public static class StatusGetHurtPatch
                 parryFramesLeftField.SetValue(__instance, MonoSingleton<FistControl>.Instance.currentPunch.activeFrames);
             }
         }
-        if (flag2 && (num2 >= 1f || (eid.hitter == "shotgun" && Random.Range(0f, 1f) > 0.5f) || (eid.hitter == "nail" && Random.Range(0f, 1f) > 0.85f)))
+        if (flag2 && (num2 >= 1f || (eid.hitter == "shotgun" && UnityEngine.Random.Range(0f, 1f) > 0.5f) || (eid.hitter == "nail" && UnityEngine.Random.Range(0f, 1f) > 0.85f)))
         {
             if (__instance.extraDamageMultiplier >= 2f)
             {
@@ -324,7 +346,7 @@ public static class StatusGetHurtPatch
                     ParticleSystem.CollisionModule collision2 = component3.GetComponent<ParticleSystem>().collision;
                     if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone" || eid.hitter == "explosion")
                     {
-                        if (Random.Range(0f, 1f) > 0.5f)
+                        if (UnityEngine.Random.Range(0f, 1f) > 0.5f)
                         {
                             collision2.enabled = false;
                         }
@@ -348,9 +370,9 @@ public static class StatusGetHurtPatch
             {
                 aud = __instance.GetComponent<AudioSource>();
             }
-            aud.clip = __instance.hurtSounds[Random.Range(0, __instance.hurtSounds.Length)];
+            aud.clip = __instance.hurtSounds[UnityEngine.Random.Range(0, __instance.hurtSounds.Length)];
             aud.volume = 0.75f;
-            aud.pitch = Random.Range(0.85f, 1.35f);
+            aud.pitch = UnityEngine.Random.Range(0.85f, 1.35f);
             aud.priority = 12;
             aud.Play();
         }
@@ -393,7 +415,7 @@ public static class StatusGetHurtPatch
         {
             if (__instance.woundedParticle)
             {
-                Object.Instantiate<GameObject>(__instance.woundedParticle, __instance.chest.transform.position, Quaternion.identity);
+                UnityEngine.Object.Instantiate<GameObject>(__instance.woundedParticle, __instance.chest.transform.position, Quaternion.identity);
             }
             if (!eid.puppet)
             {
@@ -401,7 +423,7 @@ public static class StatusGetHurtPatch
                 {
                     __instance.woundedModel.SetActive(true);
                     __instance.smr.gameObject.SetActive(false);
-                    return false;
+                    return;
                 }
                 __instance.smr.material = __instance.woundedMaterial;
                 EnemySimplifier enemySimplifier;
@@ -412,6 +434,6 @@ public static class StatusGetHurtPatch
                 }
             }
         }
-        return false;
+        return;
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 using ULTRAKILL.Cheats;
 
-namespace Only;
+namespace MustStyle;
 
 
 [HarmonyPatch(typeof(Drone), nameof(Drone.GetHurt))]
@@ -17,17 +17,38 @@ public static class DroneGetHurtPatch
                               ref bool fromExplosion,
                               Drone __instance)
     {
-        // See EnemyIdentifier.Instakill()
-        if (force == Vector3.zero && multiplier == 999f && sourceWeapon == null && !fromExplosion)
+        try
         {
-            return true;
+            // See EnemyIdentifier.Instakill()
+            if (force == Vector3.zero && multiplier == 999f && sourceWeapon == null && !fromExplosion)
+            {
+                return true;
+            }
+
+            if (RankChecker.IsRanked())
+            {
+                return true;
+            }
+
+            AdjustedMethod(ref force, ref multiplier, ref sourceWeapon, ref fromExplosion, __instance);
+
+            return false;
+            
+        }
+        catch (Exception e)
+        {
+            Plugin.Log.LogError("Error in DroneGetHurtPatch: " + e.Message);
+            return true; // Allow original method to run if an error occurs
         }
 
-        if (RankChecker.IsRanked())
-        {
-            return true;
-        }
+    }
 
+    public static void AdjustedMethod(ref Vector3 force,
+                                      ref float multiplier,
+                                      ref GameObject sourceWeapon,
+                                      ref bool fromExplosion,
+                                      Drone __instance)
+    {
         // Access private *variables*
         var eidField = AccessTools.Field(typeof(Drone), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
@@ -81,7 +102,7 @@ public static class DroneGetHurtPatch
         {
             if ((eid.hitter == "shotgunzone" || eid.hitter == "hammerzone") && !parryable && __instance.health - multiplier > 0f)
             {
-                return false;
+                return;
             }
             if (((eid.hitter == "shotgunzone" || eid.hitter == "hammerzone") && parryable) || eid.hitter == "punch")
             {
@@ -176,12 +197,12 @@ public static class DroneGetHurtPatch
                 }
                 __instance.Invoke("CanInterruptCrash", 0.5f);
                 __instance.Invoke("Explode", 5f);
-                return false;
+                return;
             }
             if (!(eid.hitter != "fire"))
             {
                 __instance.PlaySound(__instance.hurtSound);
-                return false;
+                return;
             }
             GameObject gameObject = null;
             Bloodsplatter bloodsplatter = null;
@@ -243,7 +264,7 @@ public static class DroneGetHurtPatch
             if (MonoSingleton<BloodsplatterManager>.Instance.goreOn && gameObject && gameObject.TryGetComponent<ParticleSystem>(out particleSystem))
             {
                 particleSystem.Play();
-                return false;
+                return;
             }
         }
         else if ((eid.hitter == "punch" || eid.hitter == "hammer") && !parried)
@@ -265,7 +286,7 @@ public static class DroneGetHurtPatch
             if (type == EnemyType.Virtue && __instance.TryGetComponent<Collider>(out collider))
             {
                 collider.isTrigger = true;
-                return false;
+                return;
             }
         }
         else if (multiplier >= 1f || canInterruptCrash)
@@ -273,6 +294,6 @@ public static class DroneGetHurtPatch
             __instance.Explode();
         }
 
-        return false;
+        return;                 
     }
 }
