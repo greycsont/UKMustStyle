@@ -1,7 +1,7 @@
 {
     "name": "Good_bye,Style-Go-Round.",
     "version_number": "0.0.1",
-    "website_url": "https://github.com/greycsont/UKMustStyle",
+    "website_url": "https://github.com/greycsont/UK_StyleGoRound",
     "description": "It Seems Like A Secret Mod To Becoming Stylish",
     "dependencies": [
         "BepInEx-BepInExPack-5.4.2100"
