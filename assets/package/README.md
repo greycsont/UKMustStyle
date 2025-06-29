@@ -23,6 +23,8 @@ Description have 2 references:
 
 2.[MIGHTREYA](https://store.steampowered.com/app/3077640/MIGHTREYA/)
 
+`Made by Wazen, who was involved in DMC4SE`
+
 icon are copied from Freak Out Hr. / 雄之助 feat. POPY & ROSE
 
 [link 1 to youtube](https://youtu.be/F0NVJIEak4I?si=1pVUjAcSGeetysPa)
