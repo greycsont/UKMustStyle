@@ -1,7 +1,7 @@
 {
     "name": "MustStyle",
     "version_number": "0.0.1",
-    "website_url": "https://github.com/greycsont/Only",
+    "website_url": "https://github.com/greycsont/UKMustStyle",
     "description": "BREAK!BREAK!BREAK!",
     "dependencies": [
         "BepInEx-BepInExPack-5.4.2100"
