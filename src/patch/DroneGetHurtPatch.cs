@@ -20,7 +20,7 @@ public static class DroneGetHurtPatch
         try
         {
             // See EnemyIdentifier.Instakill()
-            if (force == Vector3.zero && multiplier == 999f && sourceWeapon == null && !fromExplosion)
+            if (force == Vector3.zero && multiplier >= 999f && sourceWeapon == null && !fromExplosion)
             {
                 return true;
             }

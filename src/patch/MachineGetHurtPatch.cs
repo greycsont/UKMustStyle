@@ -3,6 +3,7 @@ using System.Reflection;
 using HarmonyLib;
 using ULTRAKILL.Cheats;
 using System;
+using System.Diagnostics;
 
 
 namespace StyleGoRound;
@@ -21,6 +22,11 @@ public static class MachineGetHurtPatch
     {
         try
         {
+            if (multiplier >= 999f)
+            {
+                return true;
+            }
+
             if (RankChecker.IsRanked())
             {
                 return true;
@@ -45,6 +51,7 @@ public static class MachineGetHurtPatch
                                       ref bool fromExplosion,
                                       Machine __instance)
     {
+
         var eidField = AccessTools.Field(typeof(Machine), "eid");
         var eid = eidField.GetValue(__instance) as EnemyIdentifier;
 

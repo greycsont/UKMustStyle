@@ -21,6 +21,11 @@ public static class SpiderGetHurtPatch
     {
         try
         {
+            if (multiplier >= 999f)
+            {
+                return true;
+            }
+            
             if (RankChecker.IsRanked())
             {
                 return true;

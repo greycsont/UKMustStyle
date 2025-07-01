@@ -2,13 +2,13 @@
 `manifest.json name: Package names can only contain a-z A-Z 0-9 _ characters`
 
 ### What does it do?
-A idea directly copied from DmC's Must Style
+Deal damage to enemies requires the S rank or higher
+
+(A idea directly copied from DmC's Must Style)
 
 Due to the large scale of reflection used in this mod so...
 
 It's a bit laggy?
-
-`I don't patch 6 GetHurt() instead I patched 5 of them`
 
 ### Credits
 Thumbnail : 
@@ -19,12 +19,12 @@ FiraCode, used under SIL OFL (Open Font License) version 1.1
 
 3270font, used under [License](https://github.com/rbanffy/3270font/blob/main/LICENSE.txt)
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Easter egg
-Name's reference : [Yooh - Good bye,Merry-Go-Round.](https://www.youtube.com/watch?v=JKVBwxBkC6k)
+`I don't patch 6 GetHurt() instead I patched 5 of them`
 
-Description's reference : [幸せになれる隠しコマンドがあるらしい / It Seems Like There's A Secret Command To Becoming Happy](https://www.youtube.com/watch?v=lwT4h6x3UM0)
+Name's reference : [Yooh - Good bye,Merry-Go-Round.](https://www.youtube.com/watch?v=JKVBwxBkC6k)
 
 icon are **copied** from Freak Out Hr. / 雄之助 feat. POPY & ROSE
 
