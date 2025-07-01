@@ -22,6 +22,7 @@ public static class ZombieGetHurtPatch
     {
         try
         {
+            // 这里的问题是interruption和deathzone都调用的是enemyIdentifier的Explode方法，如何分辨具体？
             if (multiplier >= 999f)
             {
                 return true;
@@ -53,63 +54,28 @@ public static class ZombieGetHurtPatch
                                       Zombie __instance
     )
     {
-        // Access private variable
-        var eidField = AccessTools.Field(typeof(Zombie), "eid");
-        var eid = eidField.GetValue(__instance) as EnemyIdentifier;
-
-        var gcField = AccessTools.Field(typeof(Zombie), "gc");
-        var gc = gcField.GetValue(__instance) as GroundCheckEnemy;
-
-        var bsmField = AccessTools.Field(typeof(Zombie), "bsm");
-        var bsm = bsmField.GetValue(__instance) as BloodsplatterManager;
-
-        var gzField = AccessTools.Field(typeof(Zombie), "gz");
-        var gz = gzField.GetValue(__instance) as GoreZone;
-
-        var zmField = AccessTools.Field(typeof(Zombie), "zm");
-        var zm = zmField.GetValue(__instance) as ZombieMelee;
-
-        var parryFramesLeftField = AccessTools.Field(typeof(Zombie), "parryFramesLeft");
-        var parryFramesLeft = parryFramesLeftField.GetValue(__instance) as int?;
-
-        var nohealField = AccessTools.Field(typeof(Zombie), "noheal");
-        var noheal = nohealField.GetValue(__instance) as bool? ?? false;
-
-        var audField = AccessTools.Field(typeof(Zombie), "aud");
-        var aud = audField.GetValue(__instance) as AudioSource;
-
-        var scalcField = AccessTools.Field(typeof(Zombie), "scalc");
-        var scalc = scalcField.GetValue(__instance) as StyleCalculator;
-
-        var chestHPField = AccessTools.Field(typeof(Zombie), "chestHP");
-        var chestHP = chestHPField.GetValue(__instance) as float?;
-
-        var chestExplodedField = AccessTools.Field(typeof(Zombie), "chestExploded");
-        var chestExploded = chestExplodedField.GetValue(__instance) as bool? ?? false;
-
-
         // Method
         string hitLimb = "";
         bool flag = false;
         bool flag2 = false;
-        if (eid == null)
+        if (__instance.eid == null)
         {
-            eid = __instance.GetComponent<EnemyIdentifier>();
+            __instance.eid = __instance.GetComponent<EnemyIdentifier>();
         }
-        if (gc && !gc.onGround && eid.hitter != "fire")
+        if (__instance.gc && !__instance.gc.onGround && __instance.eid.hitter != "fire")
         {
             multiplier *= 1.5f;
         }
         if (force != Vector3.zero && !__instance.limp)
         {
             __instance.KnockBack(force / 100f);
-            if (eid.hitter == "heavypunch" || (eid.hitter == "cannonball" && gc && !gc.onGround))
+            if (__instance.eid.hitter == "heavypunch" || (__instance.eid.hitter == "cannonball" && __instance.gc && !__instance.gc.onGround))
             {
-                eid.useBrakes = false;
+                __instance.eid.useBrakes = false;
             }
             else
             {
-                eid.useBrakes = true;
+                __instance.eid.useBrakes = true;
             }
         }
         if (__instance.chestExploding && __instance.health <= 0f && (target.gameObject.CompareTag("Limb") || target.gameObject.CompareTag("EndLimb")) && target.GetComponentInParent<EnemyIdentifier>() != null)
@@ -117,46 +83,46 @@ public static class ZombieGetHurtPatch
             __instance.ChestExplodeEnd();
         }
         GameObject gameObject = null;
-        if (bsm == null)
+        if (__instance.bsm == null)
         {
-            bsm = MonoSingleton<BloodsplatterManager>.Instance;
+            __instance.bsm = MonoSingleton<BloodsplatterManager>.Instance;
         }
-        if (zm && zm.diving)
+        if (__instance.zm && __instance.zm.diving)
         {
-            zm.CancelAttack();
+            __instance.zm.CancelAttack();
         }
-        if (eid.hitter == "punch")
+        if (__instance.eid.hitter == "punch")
         {
             if (__instance.attacking)
             {
-                if (!InvincibleEnemies.Enabled && !eid.blessed)
+                if (!InvincibleEnemies.Enabled && !__instance.eid.blessed)
                 {
                     //__instance.health -= (float)((parryFramesLeft > 0) ? 4 : 5);
                 }
                 __instance.attacking = false;
-                MonoSingleton<FistControl>.Instance.currentPunch.Parry(false, eid, "");
+                MonoSingleton<FistControl>.Instance.currentPunch.Parry(false, __instance.eid, "");
             }
             else
             {
-                parryFramesLeftField.SetValue(__instance, MonoSingleton<FistControl>.Instance.currentPunch.activeFrames);
+                __instance.parryFramesLeft = MonoSingleton<FistControl>.Instance.currentPunch.activeFrames;
             }
         }
         if (target.gameObject.CompareTag("Head"))
         {
             float num = 1f * multiplier + multiplier * critMultiplier;
-            if (!eid.blessed && !InvincibleEnemies.Enabled)
+            if (!__instance.eid.blessed && !InvincibleEnemies.Enabled)
             {
                 //this.health -= num;
             }
-            if (eid.hitter != "fire" && num > 0f)
+            if (__instance.eid.hitter != "fire" && num > 0f)
             {
                 if (num >= 1f || __instance.health <= 0f)
                 {
-                    gameObject = bsm.GetGore(GoreType.Head, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Head, __instance.eid, fromExplosion);
                 }
                 else
                 {
-                    gameObject = bsm.GetGore(GoreType.Small, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Small, __instance.eid, fromExplosion);
                 }
             }
             Vector3 normalized = (target.transform.position - __instance.transform.position).normalized;
@@ -171,14 +137,14 @@ public static class ZombieGetHurtPatch
                 {
                     __instance.GoLimp();
                 }
-                if (eid.hitter != "fire" && eid.hitter != "sawblade")
+                if (__instance.eid.hitter != "fire" && __instance.eid.hitter != "sawblade")
                 {
                     float num2 = 1f;
-                    if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone")
+                    if (__instance.eid.hitter == "shotgun" || __instance.eid.hitter == "shotgunzone")
                     {
                         num2 = 0.5f;
                     }
-                    else if (eid.hitter == "Explosion")
+                    else if (__instance.eid.hitter == "Explosion")
                     {
                         num2 = 0.25f;
                     }
@@ -186,29 +152,29 @@ public static class ZombieGetHurtPatch
                     {
                         target.transform.parent.GetComponentInParent<Rigidbody>().AddForce(force * 10f);
                     }
-                    if (MonoSingleton<BloodsplatterManager>.Instance.goreOn && eid.hitter != "harpoon")
+                    if (MonoSingleton<BloodsplatterManager>.Instance.goreOn && __instance.eid.hitter != "harpoon")
                     {
                         AccessTools.Method(typeof(Zombie), "GetGoreZone").Invoke(__instance, null);
                         int num3 = 0;
                         while ((float)num3 < 6f * num2)
                         {
-                            GameObject gib = bsm.GetGib(BSType.skullChunk);
+                            GameObject gib = __instance.bsm.GetGib(BSType.skullChunk);
                             AccessTools.Method(typeof(Zombie), "ReadyGib").Invoke(__instance, new object[] { gib, target });
                             num3++;
                         }
                         int num4 = 0;
                         while ((float)num4 < 4f * num2)
                         {
-                            GameObject gib = bsm.GetGib(BSType.brainChunk);
+                            GameObject gib = __instance.bsm.GetGib(BSType.brainChunk);
                             AccessTools.Method(typeof(Zombie), "ReadyGib").Invoke(__instance, new object[] { gib, target });
                             num4++;
                         }
                         int num5 = 0;
                         while ((float)num5 < 2f * num2)
                         {
-                            GameObject gib = bsm.GetGib(BSType.eyeball);
+                            GameObject gib = __instance.bsm.GetGib(BSType.eyeball);
                             AccessTools.Method(typeof(Zombie), "ReadyGib").Invoke(__instance, new object[] { gib, target });
-                            gib = bsm.GetGib(BSType.jawChunk);
+                            gib = __instance.bsm.GetGib(BSType.jawChunk);
                             AccessTools.Method(typeof(Zombie), "ReadyGib").Invoke(__instance, new object[] { gib, target });
                             num5++;
                         }
@@ -218,28 +184,28 @@ public static class ZombieGetHurtPatch
         }
         else if (target.gameObject.CompareTag("Limb") || target.gameObject.CompareTag("EndLimb"))
         {
-            if (eid == null)
+            if (__instance.eid == null)
             {
-                eid = __instance.GetComponent<EnemyIdentifier>();
+                __instance.eid = __instance.GetComponent<EnemyIdentifier>();
             }
             float num = 1f * multiplier + 0.5f * multiplier * critMultiplier;
-            if (!eid.blessed && !InvincibleEnemies.Enabled)
+            if (!__instance.eid.blessed && !InvincibleEnemies.Enabled)
             {
                 //this.health -= num;
             }
-            if (eid.hitter != "fire" && num > 0f)
+            if (__instance.eid.hitter != "fire" && num > 0f)
             {
-                if (eid.hitter == "hammer")
+                if (__instance.eid.hitter == "hammer")
                 {
-                    gameObject = bsm.GetGore(GoreType.Head, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Head, __instance.eid, fromExplosion);
                 }
-                else if (((num >= 1f || __instance.health <= 0f) && eid.hitter != "explosion") || (eid.hitter == "explosion" && target.gameObject.CompareTag("EndLimb")))
+                else if (((num >= 1f || __instance.health <= 0f) && __instance.eid.hitter != "explosion") || (__instance.eid.hitter == "explosion" && target.gameObject.CompareTag("EndLimb")))
                 {
-                    gameObject = bsm.GetGore(GoreType.Limb, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Limb, __instance.eid, fromExplosion);
                 }
-                else if (eid.hitter != "explosion")
+                else if (__instance.eid.hitter != "explosion")
                 {
-                    gameObject = bsm.GetGore(GoreType.Small, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Small, __instance.eid, fromExplosion);
                 }
             }
             Vector3 normalized2 = (target.transform.position - __instance.transform.position).normalized;
@@ -254,27 +220,27 @@ public static class ZombieGetHurtPatch
                 {
                     __instance.GoLimp();
                 }
-                if (eid.hitter == "sawblade")
+                if (__instance.eid.hitter == "sawblade")
                 {
-                    if (!chestExploded && target.transform.position.y > __instance.chest.transform.position.y - 1f)
+                    if (!__instance.chestExploded && target.transform.position.y > __instance.chest.transform.position.y - 1f)
                     {
                         __instance.ChestExplosion(true, false);
                     }
                 }
-                else if (eid.hitter != "fire" && eid.hitter != "harpoon")
+                else if (__instance.eid.hitter != "fire" && __instance.eid.hitter != "harpoon")
                 {
-                    if (MonoSingleton<BloodsplatterManager>.Instance.goreOn && eid.hitter != "explosion" && target.gameObject.CompareTag("Limb"))
+                    if (MonoSingleton<BloodsplatterManager>.Instance.goreOn && __instance.eid.hitter != "explosion" && target.gameObject.CompareTag("Limb"))
                     {
                         float num6 = 1f;
                         AccessTools.Method(typeof(Zombie), "GetGoreZone").Invoke(__instance, null);
-                        if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone")
+                        if (__instance.eid.hitter == "shotgun" || __instance.eid.hitter == "shotgunzone")
                         {
                             num6 = 0.5f;
                         }
                         int num7 = 0;
                         while ((float)num7 < 4f * num6)
                         {
-                            GameObject gib2 = bsm.GetGib(BSType.gib);
+                            GameObject gib2 = __instance.bsm.GetGib(BSType.gib);
                             AccessTools.Method(typeof(Zombie), "ReadyGib").Invoke(__instance, new object[] { gib2, target });
                             num7++;
                         }
@@ -290,57 +256,57 @@ public static class ZombieGetHurtPatch
         else
         {
             float num = multiplier;
-            if (eid == null)
+            if (__instance.eid == null)
             {
-                eid = __instance.GetComponent<EnemyIdentifier>();
+                __instance.eid = __instance.GetComponent<EnemyIdentifier>();
             }
-            if (eid.hitter == "shotgunzone" || eid.hitter == "hammerzone")
+            if (__instance.eid.hitter == "shotgunzone" || __instance.eid.hitter == "hammerzone")
             {
                 if (!__instance.attacking && (target.gameObject != __instance.chest || __instance.health - num > 0f))
                 {
                     num = 0f;
                 }
-                else if (__instance.attacking && (target.gameObject == __instance.chest || eid.target.GetVelocity().magnitude > 18f))
+                else if (__instance.attacking && (target.gameObject == __instance.chest || __instance.eid.target.GetVelocity().magnitude > 18f))
                 {
-                    if (!InvincibleEnemies.Enabled && !eid.blessed)
+                    if (!InvincibleEnemies.Enabled && !__instance.eid.blessed)
                     {
                         num *= 2f;
                     }
-                    MonoSingleton<NewMovement>.Instance.Parry(eid, "");
+                    MonoSingleton<NewMovement>.Instance.Parry(__instance.eid, "");
                 }
             }
-            if (!eid.blessed && !InvincibleEnemies.Enabled)
+            if (!__instance.eid.blessed && !InvincibleEnemies.Enabled)
             {
                 //this.health -= num;
             }
-            if (eid.hitter != "fire" && num > 0f)
+            if (__instance.eid.hitter != "fire" && num > 0f)
             {
-                if (eid.hitter == "hammer")
+                if (__instance.eid.hitter == "hammer")
                 {
-                    gameObject = bsm.GetGore(GoreType.Head, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Head, __instance.eid, fromExplosion);
                 }
                 else if (num >= 1f || __instance.health <= 0f)
                 {
-                    gameObject = bsm.GetGore(GoreType.Body, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Body, __instance.eid, fromExplosion);
                 }
                 else
                 {
-                    gameObject = bsm.GetGore(GoreType.Small, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Small, __instance.eid, fromExplosion);
                 }
             }
-            if (__instance.health <= 0f && target.gameObject == __instance.chest && eid.hitter != "fire")
+            if (__instance.health <= 0f && target.gameObject == __instance.chest && __instance.eid.hitter != "fire")
             {
-                if (eid.hitter == "shotgunzone" || eid.hitter == "hammerzone" || eid.hitter == "sawblade")
+                if (__instance.eid.hitter == "shotgunzone" || __instance.eid.hitter == "hammerzone" || __instance.eid.hitter == "sawblade")
                 {
-                    chestHP = 0f;
+                    __instance.chestHP = 0f;
                 }
                 else
                 {
-                    chestHP -= num;
+                    __instance.chestHP -= num;
                 }
-                if (chestHP <= 0f && eid.hitter != "harpoon")
+                if (__instance.chestHP <= 0f && __instance.eid.hitter != "harpoon")
                 {
-                    __instance.ChestExplosion(eid.hitter == "sawblade", fromExplosion);
+                    __instance.ChestExplosion(__instance.eid.hitter == "sawblade", fromExplosion);
                 }
             }
             if (!__instance.limp)
@@ -354,7 +320,7 @@ public static class ZombieGetHurtPatch
                 {
                     __instance.GoLimp();
                 }
-                if (eid.hitter != "sawblade" && target.GetComponentInParent<Rigidbody>() != null)
+                if (__instance.eid.hitter != "sawblade" && target.GetComponentInParent<Rigidbody>() != null)
                 {
                     target.GetComponentInParent<Rigidbody>().AddForce(force * 10f);
                 }
@@ -364,19 +330,19 @@ public static class ZombieGetHurtPatch
         {
             AccessTools.Method(typeof(Zombie), "GetGoreZone").Invoke(__instance, null);
             gameObject.transform.position = target.transform.position;
-            if (eid.hitter == "drill")
+            if (__instance.eid.hitter == "drill")
             {
                 gameObject.transform.localScale *= 2f;
             }
-            if (gz != null && gz.goreZone != null)
+            if (__instance.gz != null && __instance.gz.goreZone != null)
             {
-                gameObject.transform.SetParent(gz.goreZone, true);
+                gameObject.transform.SetParent(__instance.gz.goreZone, true);
             }
             Bloodsplatter component = gameObject.GetComponent<Bloodsplatter>();
             if (component)
             {
                 ParticleSystem.CollisionModule collision = component.GetComponent<ParticleSystem>().collision;
-                if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone" || eid.hitter == "explosion")
+                if (__instance.eid.hitter == "shotgun" || __instance.eid.hitter == "shotgunzone" || __instance.eid.hitter == "explosion")
                 {
                     if (UnityEngine.Random.Range(0f, 1f) > 0.5f)
                     {
@@ -384,12 +350,12 @@ public static class ZombieGetHurtPatch
                     }
                     component.hpAmount = 3;
                 }
-                else if (eid.hitter == "nail")
+                else if (__instance.eid.hitter == "nail")
                 {
                     component.hpAmount = 1;
                     component.GetComponent<AudioSource>().volume *= 0.8f;
                 }
-                if (!noheal)
+                if (!__instance.noheal)
                 {
                     component.GetReady();
                 }
@@ -397,11 +363,11 @@ public static class ZombieGetHurtPatch
         }
         if (__instance.health <= 0f)
         {
-            if (eid.hitter == "sawblade")
+            if (__instance.eid.hitter == "sawblade")
             {
                 __instance.Cut(target);
             }
-            else if (eid.hitter != "harpoon" && eid.hitter != "fire")
+            else if (__instance.eid.hitter != "harpoon" && __instance.eid.hitter != "fire")
             {
                 if (target.gameObject.CompareTag("Limb"))
                 {
@@ -419,7 +385,7 @@ public static class ZombieGetHurtPatch
                                 {
                                     enemyIdentifierIdentifier.SetupForHellBath();
                                 }
-                                characterJoint.transform.SetParent(gz.transform);
+                                characterJoint.transform.SetParent(__instance.gz.transform);
                                 UnityEngine.Object.Destroy(characterJoint);
                             }
                         }
@@ -431,7 +397,7 @@ public static class ZombieGetHurtPatch
                         }
                         target.transform.position = child.position;
                         target.transform.SetParent(child);
-                        child.SetParent(gz.transform, true);
+                        child.SetParent(__instance.gz.transform, true);
                         UnityEngine.Object.Destroy(target.GetComponent<Rigidbody>());
                     }
                     UnityEngine.Object.Destroy(target.GetComponent<Collider>());
@@ -445,57 +411,57 @@ public static class ZombieGetHurtPatch
                 }
             }
         }
-        if (__instance.health > 0f && !__instance.limp && __instance.hurtSounds.Length != 0 && !eid.blessed && eid.hitter != "blocked")
+        if (__instance.health > 0f && !__instance.limp && __instance.hurtSounds.Length != 0 && !__instance.eid.blessed && __instance.eid.hitter != "blocked")
         {
-            aud.clip = __instance.hurtSounds[UnityEngine.Random.Range(0, __instance.hurtSounds.Length)];
-            aud.volume = __instance.hurtSoundVol;
-            aud.pitch = UnityEngine.Random.Range(0.85f, 1.35f);
-            aud.priority = 12;
-            aud.Play();
+            __instance.aud.clip = __instance.hurtSounds[UnityEngine.Random.Range(0, __instance.hurtSounds.Length)];
+            __instance.aud.volume = __instance.hurtSoundVol;
+            __instance.aud.pitch = UnityEngine.Random.Range(0.85f, 1.35f);
+            __instance.aud.priority = 12;
+            __instance.aud.Play();
         }
-        if (eid == null)
+        if (__instance.eid == null)
         {
-            eid = __instance.GetComponent<EnemyIdentifier>();
+            __instance.eid = __instance.GetComponent<EnemyIdentifier>();
         }
-        if (multiplier == 0f || eid.puppet)
+        if (multiplier == 0f || __instance.eid.puppet)
         {
             flag2 = false;
         }
-        if (flag2 && eid.hitter != "enemy")
+        if (flag2 && __instance.eid.hitter != "enemy")
         {
-            if (scalc == null)
+            if (__instance.scalc == null)
             {
-                scalc = MonoSingleton<StyleCalculator>.Instance;
+                __instance.scalc = MonoSingleton<StyleCalculator>.Instance;
             }
             if (__instance.health <= 0f)
             {
                 flag = true;
-                if (gc && !gc.onGround)
+                if (__instance.gc && !__instance.gc.onGround)
                 {
-                    if (eid.hitter == "explosion" || eid.hitter == "ffexplosion" || eid.hitter == "railcannon")
+                    if (__instance.eid.hitter == "explosion" || __instance.eid.hitter == "ffexplosion" || __instance.eid.hitter == "railcannon")
                     {
-                        scalc.shud.AddPoints(120, "ultrakill.fireworks", sourceWeapon, eid, -1, "", "");
+                        __instance.scalc.shud.AddPoints(120, "ultrakill.fireworks", sourceWeapon, __instance.eid, -1, "", "");
                     }
-                    else if (eid.hitter == "ground slam")
+                    else if (__instance.eid.hitter == "ground slam")
                     {
-                        scalc.shud.AddPoints(160, "ultrakill.airslam", sourceWeapon, eid, -1, "", "");
+                        __instance.scalc.shud.AddPoints(160, "ultrakill.airslam", sourceWeapon, __instance.eid, -1, "", "");
                     }
-                    else if (eid.hitter != "deathzone")
+                    else if (__instance.eid.hitter != "deathzone")
                     {
-                        scalc.shud.AddPoints(50, "ultrakill.airshot", sourceWeapon, eid, -1, "", "");
+                        __instance.scalc.shud.AddPoints(50, "ultrakill.airshot", sourceWeapon, __instance.eid, -1, "", "");
                     }
                 }
             }
-            if (eid.hitter != "secret" && scalc)
+            if (__instance.eid.hitter != "secret" && __instance.scalc)
             {
-                scalc.HitCalculator(eid.hitter, "zombie", hitLimb, flag, eid, sourceWeapon);
+                __instance.scalc.HitCalculator(__instance.eid.hitter, "zombie", hitLimb, flag, __instance.eid, sourceWeapon);
             }
-            if (flag && eid.hitter != "fire")
+            if (flag && __instance.eid.hitter != "fire")
             {
                 Flammable componentInChildren = __instance.GetComponentInChildren<Flammable>();
-                if (componentInChildren && componentInChildren.burning && scalc)
+                if (componentInChildren && componentInChildren.burning && __instance.scalc)
                 {
-                    scalc.shud.AddPoints(50, "ultrakill.finishedoff", sourceWeapon, eid, -1, "", "");
+                    __instance.scalc.shud.AddPoints(50, "ultrakill.finishedoff", sourceWeapon, __instance.eid, -1, "", "");
                 }
             }
         }

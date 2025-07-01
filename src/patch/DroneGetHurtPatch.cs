@@ -49,79 +49,32 @@ public static class DroneGetHurtPatch
                                       ref bool fromExplosion,
                                       Drone __instance)
     {
-        // Access private *variables*
-        var eidField = AccessTools.Field(typeof(Drone), "eid");
-        var eid = eidField.GetValue(__instance) as EnemyIdentifier;
-
-        var parryableField = AccessTools.Field(typeof(Drone), "parryable");
-        var parryable = parryableField.GetValue(__instance) as bool? ?? false;
-
-        var parryFramesLeftField = AccessTools.Field(typeof(Drone), "parryFramesLeft");
-        var parryFramesLeft = parryFramesLeftField.GetValue(__instance) as int? ?? 0;
-
-        var homeRunnableField = AccessTools.Field(typeof(Drone), "homeRunnable");
-        var homeRunnable = homeRunnableField.GetValue(__instance) as bool? ?? false;
-
-        var scalcField = AccessTools.Field(typeof(Drone), "scalc");
-        var scalc = scalcField.GetValue(__instance) as StyleCalculator;
-
-        var targetProperty = AccessTools.Property(typeof(Drone), "target");
-        var target = targetProperty.GetValue(__instance) as EnemyTarget;
-
-        var crashTargetField = AccessTools.Field(typeof(Drone), "crashTarget");
-        var crashTarget = crashTargetField.GetValue(__instance) as Vector3? ?? Vector3.zero;
-
-        var canHurtOtherDronesField = AccessTools.Field(typeof(Drone), "canHurtOtherDrones");
-        var canHurtOtherDrones = canHurtOtherDronesField.GetValue(__instance) as bool? ?? false;
-
-        var rbField = AccessTools.Field(typeof(Drone), "rb");
-        var rb = rbField.GetValue(__instance) as Rigidbody;
-
-        var audField = AccessTools.Field(typeof(Drone), "aud");
-        var aud = audField.GetValue(__instance) as AudioSource;
-
-        var typeField = AccessTools.Field(typeof(Drone), "type");
-        var type = typeField.GetValue(__instance) as EnemyType? ?? EnemyType.Drone;
-
-        var bsmField = AccessTools.Field(typeof(Drone), "bsm");
-        var bsm = bsmField.GetValue(__instance) as BloodsplatterManager;
-
-        var gzField = AccessTools.Field(typeof(Drone), "gz");
-        var gz = gzField.GetValue(__instance) as GoreZone;
-
-        var parriedField = AccessTools.Field(typeof(Drone), "parried");
-        var parried = parriedField.GetValue(__instance) as bool? ?? false;
-
-        var canInterruptCrashField = AccessTools.Field(typeof(Drone), "canInterruptCrash");
-        var canInterruptCrash = canInterruptCrashField.GetValue(__instance) as bool? ?? false;
-
-
         // Method start
         bool flag = false;
         if (!__instance.crashing)
         {
-            if ((eid.hitter == "shotgunzone" || eid.hitter == "hammerzone") && !parryable && __instance.health - multiplier > 0f)
+            if ((__instance.eid.hitter == "shotgunzone" || __instance.eid.hitter == "hammerzone") && !__instance.parryable && __instance.health - multiplier > 0f)
             {
                 return;
             }
-            if (((eid.hitter == "shotgunzone" || eid.hitter == "hammerzone") && parryable) || eid.hitter == "punch")
+            if (((__instance.eid.hitter == "shotgunzone" || __instance.eid.hitter == "hammerzone") && __instance.parryable) || __instance.eid.hitter == "punch")
             {
-                if (parryable)
+                if (__instance.parryable)
                 {
-                    if (!InvincibleEnemies.Enabled && !eid.blessed)
+                    if (!InvincibleEnemies.Enabled && !__instance.eid.blessed)
                     {
-                        multiplier = (float)((parryFramesLeft > 0) ? 3 : 4);
+                        multiplier = (float)((__instance.parryFramesLeft > 0) ? 3 : 4);
                     }
-                    MonoSingleton<FistControl>.Instance.currentPunch.Parry(false, eid, "");
-                    parryableField.SetValue(__instance, false);
+                    MonoSingleton<FistControl>.Instance.currentPunch.Parry(false, __instance.eid, "");
+                    __instance.parryable = false;
                     //this.parryable = false;
                 }
                 else
                 {
-                    parryFramesLeftField.SetValue(__instance, MonoSingleton<FistControl>.Instance.currentPunch.activeFrames);
+                    __instance.parryFramesLeft = MonoSingleton<FistControl>.Instance.currentPunch.activeFrames;
                 }
             }
-            if (!eid.blessed && !InvincibleEnemies.Enabled)
+            if (!__instance.eid.blessed && !InvincibleEnemies.Enabled)
             {
                 //this.health -= 1f * multiplier;
             }
@@ -130,66 +83,66 @@ public static class DroneGetHurtPatch
             {
                 __instance.health = 0f;
             }
-            if (eid == null)
+            if (__instance.eid == null)
             {
-                eid = __instance.GetComponent<EnemyIdentifier>();
+                __instance.eid = __instance.GetComponent<EnemyIdentifier>();
             }
             if (__instance.health <= 0f)
             {
                 flag = true;
             }
-            if (homeRunnable && !__instance.fleshDrone && !eid.puppet && flag && (eid.hitter == "punch" || eid.hitter == "heavypunch" || eid.hitter == "hammer"))
+            if (__instance.homeRunnable && !__instance.fleshDrone && !__instance.eid.puppet && flag && (__instance.eid.hitter == "punch" || __instance.eid.hitter == "heavypunch" || __instance.eid.hitter == "hammer"))
             {
-                MonoSingleton<StyleHUD>.Instance.AddPoints(100, "ultrakill.homerun", sourceWeapon, eid, -1, "", "");
+                MonoSingleton<StyleHUD>.Instance.AddPoints(100, "ultrakill.homerun", sourceWeapon, __instance.eid, -1, "", "");
                 MonoSingleton<StyleCalculator>.Instance.AddToMultiKill(null);
             }
-            else if (eid.hitter != "enemy" && !eid.puppet && multiplier != 0f)
+            else if (__instance.eid.hitter != "enemy" && !__instance.eid.puppet && multiplier != 0f)
             {
-                if (scalc == null)
+                if (__instance.scalc == null)
                 {
-                    scalc = MonoSingleton<StyleCalculator>.Instance;
+                    __instance.scalc = MonoSingleton<StyleCalculator>.Instance;
                 }
-                if (scalc)
+                if (__instance.scalc)
                 {
-                    scalc.HitCalculator(eid.hitter, "drone", "", flag, eid, sourceWeapon);
+                    __instance.scalc.HitCalculator(__instance.eid.hitter, "drone", "", flag, __instance.eid, sourceWeapon);
                 }
             }
             if (__instance.health <= 0f && !__instance.crashing)
             {
-                parryableField.SetValue(__instance, false);
+                __instance.parryable = false;
                 //this.parryable = false;
-                AccessTools.Method(typeof(Drone), "Death").Invoke(__instance, new object[] { fromExplosion });
+                __instance.Death(fromExplosion);
                 //this.Death(fromExplosion);
-                if (eid.hitter != "punch" && eid.hitter != "heavypunch" && eid.hitter != "hammer")
+                if (__instance.eid.hitter != "punch" && __instance.eid.hitter != "heavypunch" && __instance.eid.hitter != "hammer")
                 {
-                    if (target != null)
+                    if (__instance.target != null)
                     {
-                        crashTargetField.SetValue(__instance, target.position);
+                        __instance.crashTarget = __instance.target.position;
                         //this.crashTarget = this.target.position;
                     }
                 }
                 else
                 {
-                    canHurtOtherDronesField.SetValue(__instance, true);
+                    __instance.canHurtOtherDrones = true;
                     __instance.transform.position += force.normalized;
-                    crashTargetField.SetValue(__instance, __instance.transform.position + force);
-                    if (!rb.isKinematic)
+                    __instance.crashTarget = __instance.transform.position + force;
+                    if (!__instance.rb.isKinematic)
                     {
-                        rb.velocity = force.normalized * 40f;
+                        __instance.rb.velocity = force.normalized * 40f;
                     }
                 }
-                __instance.transform.LookAt(crashTarget);
-                if (aud == null)
+                __instance.transform.LookAt(__instance.crashTarget);
+                if (__instance.aud == null)
                 {
-                    aud = __instance.GetComponent<AudioSource>();
+                    __instance.aud = __instance.GetComponent<AudioSource>();
                 }
-                if (type == EnemyType.Drone)
+                if (__instance.type == EnemyType.Drone)
                 {
-                    aud.clip = __instance.deathSound;
-                    aud.volume = 0.75f;
-                    aud.pitch = UnityEngine.Random.Range(0.85f, 1.35f);
-                    aud.priority = 11;
-                    aud.Play();
+                    __instance.aud.clip = __instance.deathSound;
+                    __instance.aud.volume = 0.75f;
+                    __instance.aud.pitch = UnityEngine.Random.Range(0.85f, 1.35f);
+                    __instance.aud.priority = 11;
+                    __instance.aud.Play();
                 }
                 else
                 {
@@ -199,7 +152,7 @@ public static class DroneGetHurtPatch
                 __instance.Invoke("Explode", 5f);
                 return;
             }
-            if (!(eid.hitter != "fire"))
+            if (!(__instance.eid.hitter != "fire"))
             {
                 __instance.PlaySound(__instance.hurtSound);
                 return;
@@ -208,15 +161,15 @@ public static class DroneGetHurtPatch
             Bloodsplatter bloodsplatter = null;
             if (multiplier != 0f)
             {
-                if (!eid.blessed)
+                if (!__instance.eid.blessed)
                 {
                     __instance.PlaySound(__instance.hurtSound);
                 }
-                gameObject = bsm.GetGore(GoreType.Body, eid, fromExplosion);
+                gameObject = __instance.bsm.GetGore(GoreType.Body, __instance.eid, fromExplosion);
                 gameObject.transform.position = __instance.transform.position;
                 gameObject.SetActive(true);
-                gameObject.transform.SetParent(gz.goreZone, true);
-                if (eid.hitter == "drill")
+                gameObject.transform.SetParent(__instance.gz.goreZone, true);
+                if (__instance.eid.hitter == "drill")
                 {
                     gameObject.transform.localScale *= 2f;
                 }
@@ -224,23 +177,23 @@ public static class DroneGetHurtPatch
             }
             if (__instance.health > 0f)
             {
-                if (eid.hitter == "nail")
+                if (__instance.eid.hitter == "nail")
                 {
-                    bloodsplatter.hpAmount = (type == EnemyType.Virtue) ? 3 : 1;
+                    bloodsplatter.hpAmount = (__instance.type == EnemyType.Virtue) ? 3 : 1;
                     bloodsplatter.GetComponent<AudioSource>().volume *= 0.8f;
                 }
                 if (bloodsplatter)
                 {
                     bloodsplatter.GetReady();
                 }
-                if (!eid.blessed && !rb.isKinematic)
+                if (!__instance.eid.blessed && !__instance.rb.isKinematic)
                 {
-                    rb.velocity = rb.velocity / 10f;
-                    rb.AddForce(force.normalized * (force.magnitude / 100f), ForceMode.Impulse);
-                    rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-                    if (rb.velocity.magnitude > 50f)
+                    __instance.rb.velocity = __instance.rb.velocity / 10f;
+                    __instance.rb.AddForce(force.normalized * (force.magnitude / 100f), ForceMode.Impulse);
+                    __instance.rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+                    if (__instance.rb.velocity.magnitude > 50f)
                     {
-                        rb.velocity = Vector3.ClampMagnitude(rb.velocity, 50f);
+                        __instance.rb.velocity = Vector3.ClampMagnitude(__instance.rb.velocity, 50f);
                     }
                 }
             }
@@ -255,7 +208,7 @@ public static class DroneGetHurtPatch
                     int num = 0;
                     while ((float)num <= multiplier)
                     {
-                        UnityEngine.Object.Instantiate<GameObject>(__instance.gib.ToAsset(), __instance.transform.position, UnityEngine.Random.rotation).transform.SetParent(gz.gibZone, true);
+                        UnityEngine.Object.Instantiate<GameObject>(__instance.gib.ToAsset(), __instance.transform.position, UnityEngine.Random.rotation).transform.SetParent(__instance.gz.gibZone, true);
                         num++;
                     }
                 }
@@ -267,29 +220,29 @@ public static class DroneGetHurtPatch
                 return;
             }
         }
-        else if ((eid.hitter == "punch" || eid.hitter == "hammer") && !parried)
+        else if ((__instance.eid.hitter == "punch" || __instance.eid.hitter == "hammer") && !__instance.parried)
         {
-            parriedField.SetValue(__instance, true);
+            __instance.parried = true;
             //this.parried = true;
-            if (!rb.isKinematic)
+            if (!__instance.rb.isKinematic)
             {
-                rb.velocity = Vector3.zero;
+                __instance.rb.velocity = Vector3.zero;
             }
             __instance.transform.rotation = MonoSingleton<CameraController>.Instance.transform.rotation;
             Punch currentPunch = MonoSingleton<FistControl>.Instance.currentPunch;
-            if (eid.hitter == "punch")
+            if (__instance.eid.hitter == "punch")
             {
                 currentPunch.GetComponent<Animator>().Play("Hook", -1, 0.065f);
-                currentPunch.Parry(false, eid, "");
+                currentPunch.Parry(false, __instance.eid, "");
             }
             Collider collider;
-            if (type == EnemyType.Virtue && __instance.TryGetComponent<Collider>(out collider))
+            if (__instance.type == EnemyType.Virtue && __instance.TryGetComponent<Collider>(out collider))
             {
                 collider.isTrigger = true;
                 return;
             }
         }
-        else if (multiplier >= 1f || canInterruptCrash)
+        else if (multiplier >= 1f || __instance.canInterruptCrash)
         {
             __instance.Explode();
         }

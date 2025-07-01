@@ -52,41 +52,6 @@ public static class StatusGetHurtPatch
                                       ref bool fromExplosion,
                                       Statue __instance)
     {
-        // Access private variables
-        var eidField = AccessTools.Field(typeof(Statue), "eid");
-        var eid = eidField.GetValue(__instance) as EnemyIdentifier;
-
-        var massDyingField = AccessTools.Field(typeof(Statue), "massDying");
-        var massDying = massDyingField.GetValue(__instance) as bool? ?? false;
-
-        var bsmField = AccessTools.Field(typeof(Statue), "bsm");
-        var bsm = bsmField.GetValue(__instance) as BloodsplatterManager;
-
-        var massField = AccessTools.Field(typeof(Statue), "mass");
-        var mass = massField.GetValue(__instance) as Mass;
-
-        var gzField = AccessTools.Field(typeof(Statue), "gz");
-        var gz = gzField.GetValue(__instance) as GoreZone;
-
-        var gcField = AccessTools.Field(typeof(Statue), "gc");
-        var gc = gcField.GetValue(__instance) as GroundCheckEnemy;
-
-        var nohealField = AccessTools.Field(typeof(Statue), "noheal");
-        var noheal = nohealField.GetValue(__instance) as bool? ?? false;
-
-        var parryFramesLeftField = AccessTools.Field(typeof(Statue), "parryFramesLeft");
-        var parryFramesLeft = parryFramesLeftField.GetValue(__instance) as int? ?? 0;
-
-        var parryFramesOnPartialField = AccessTools.Field(typeof(Statue), "parryFramesOnPartial");
-        var parryFramesOnPartial = parryFramesOnPartialField.GetValue(__instance) as bool? ?? false;
-
-
-        var audField = AccessTools.Field(typeof(Statue), "aud");
-        var aud = audField.GetValue(__instance) as AudioSource;
-
-        var scalcField = AccessTools.Field(typeof(Statue), "scalc");
-        var scalc = scalcField.GetValue(__instance) as StyleCalculator;
-
         // Method Start
         string hitLimb = "";
         bool dead = false;
@@ -94,11 +59,11 @@ public static class StatusGetHurtPatch
         bool flag2 = false;
         GameObject gameObject = null;
         float num = __instance.health;
-        if (massDying)
+        if (__instance.massDying)
         {
             return;
         }
-        if (eid == null)
+        if (__instance.eid == null)
         {
             return;
         }
@@ -111,19 +76,19 @@ public static class StatusGetHurtPatch
                 num2 *= __instance.extraDamageMultiplier;
                 flag2 = true;
             }
-            if (!eid.blessed && !InvincibleEnemies.Enabled)
+            if (!__instance.eid.blessed && !InvincibleEnemies.Enabled)
             {
                 //this.health -= num2;
             }
-            if (eid.hitter != "fire" && num2 > 0f)
+            if (__instance.eid.hitter != "fire" && num2 > 0f)
             {
                 if (num2 >= 1f || __instance.health <= 0f)
                 {
-                    gameObject = bsm.GetGore(GoreType.Head, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Head, __instance.eid, fromExplosion);
                 }
                 else
                 {
-                    gameObject = bsm.GetGore(GoreType.Small, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Small, __instance.eid, fromExplosion);
                 }
             }
             if (!__instance.limp)
@@ -144,23 +109,23 @@ public static class StatusGetHurtPatch
                 num2 *= __instance.extraDamageMultiplier;
                 flag2 = true;
             }
-            if (!eid.blessed && !InvincibleEnemies.Enabled)
+            if (!__instance.eid.blessed && !InvincibleEnemies.Enabled)
             {
                 //this.health -= num2;
             }
-            if (eid.hitter != "fire" && num2 > 0f)
+            if (__instance.eid.hitter != "fire" && num2 > 0f)
             {
-                if (eid.hitter == "hammer")
+                if (__instance.eid.hitter == "hammer")
                 {
-                    gameObject = bsm.GetGore(GoreType.Head, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Head, __instance.eid, fromExplosion);
                 }
-                else if ((num2 >= 1f && __instance.health > 0f) || (__instance.health <= 0f && eid.hitter != "explosion") || (eid.hitter == "explosion" && target.gameObject.CompareTag("EndLimb")))
+                else if ((num2 >= 1f && __instance.health > 0f) || (__instance.health <= 0f && __instance.eid.hitter != "explosion") || (__instance.eid.hitter == "explosion" && target.gameObject.CompareTag("EndLimb")))
                 {
-                    gameObject = bsm.GetGore(GoreType.Limb, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Limb, __instance.eid, fromExplosion);
                 }
-                else if (eid.hitter != "explosion")
+                else if (__instance.eid.hitter != "explosion")
                 {
-                    gameObject = bsm.GetGore(GoreType.Small, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Small, __instance.eid, fromExplosion);
                 }
             }
             if (!__instance.limp)
@@ -176,7 +141,7 @@ public static class StatusGetHurtPatch
         else
         {
             num2 = 1f * multiplier;
-            if (eid.hitter == "shotgunzone" || eid.hitter == "hammerzone")
+            if (__instance.eid.hitter == "shotgunzone" || __instance.eid.hitter == "hammerzone")
             {
                 if (!__instance.parryable && (!__instance.partiallyParryable || __instance.parryables == null || !__instance.parryables.Contains(target.transform)) && (target.gameObject != __instance.chest || __instance.health - num2 > 0f))
                 {
@@ -188,7 +153,7 @@ public static class StatusGetHurtPatch
                     __instance.parryable = false;
                     __instance.partiallyParryable = false;
                     __instance.parryables.Clear();
-                    MonoSingleton<NewMovement>.Instance.Parry(eid, "");
+                    MonoSingleton<NewMovement>.Instance.Parry(__instance.eid, "");
                     __instance.SendMessage("GotParried", SendMessageOptions.DontRequireReceiver);
                 }
             }
@@ -197,23 +162,23 @@ public static class StatusGetHurtPatch
                 num2 *= __instance.extraDamageMultiplier;
                 flag2 = true;
             }
-            if (!eid.blessed && !InvincibleEnemies.Enabled)
+            if (!__instance.eid.blessed && !InvincibleEnemies.Enabled)
             {
                 //this.health -= num2;
             }
-            if (eid.hitter != "fire" && num2 > 0f)
+            if (__instance.eid.hitter != "fire" && num2 > 0f)
             {
-                if (eid.hitter == "hammer")
+                if (__instance.eid.hitter == "hammer")
                 {
-                    gameObject = bsm.GetGore(GoreType.Head, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Head, __instance.eid, fromExplosion);
                 }
-                else if ((num2 >= 1f && __instance.health > 0f) || (__instance.health <= 0f && eid.hitter != "explosion") || (eid.hitter == "explosion" && target.gameObject.CompareTag("EndLimb")))
+                else if ((num2 >= 1f && __instance.health > 0f) || (__instance.health <= 0f && __instance.eid.hitter != "explosion") || (__instance.eid.hitter == "explosion" && target.gameObject.CompareTag("EndLimb")))
                 {
-                    gameObject = bsm.GetGore(GoreType.Body, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Body, __instance.eid, fromExplosion);
                 }
-                else if (eid.hitter != "explosion")
+                else if (__instance.eid.hitter != "explosion")
                 {
-                    gameObject = bsm.GetGore(GoreType.Small, eid, fromExplosion);
+                    gameObject = __instance.bsm.GetGore(GoreType.Small, __instance.eid, fromExplosion);
                 }
             }
             if (!__instance.limp)
@@ -233,32 +198,32 @@ public static class StatusGetHurtPatch
                 }
             }
         }
-        if (mass != null)
+        if (__instance.mass != null)
         {
-            if (mass.spearShot && mass.tempSpear && mass.tailHitboxes.Contains(target))
+            if (__instance.mass.spearShot && __instance.mass.tempSpear && __instance.mass.tailHitboxes.Contains(target))
             {
-                MassSpear component = mass.tempSpear.GetComponent<MassSpear>();
+                MassSpear component = __instance.mass.tempSpear.GetComponent<MassSpear>();
                 if (component != null && component.hitPlayer)
                 {
                     if (num2 >= 1f || component.spearHealth - num2 <= 0f)
                     {
-                        GameObject gore = bsm.GetGore(GoreType.Head, eid, fromExplosion);
-                        AccessTools.Method(typeof(Statue), "ReadyGib").Invoke(__instance, new object[] { gore, mass.tailEnd.GetChild(0).gameObject });
+                        GameObject gore = __instance.bsm.GetGore(GoreType.Head, __instance.eid, fromExplosion);
+                        AccessTools.Method(typeof(Statue), "ReadyGib").Invoke(__instance, new object[] { gore, __instance.mass.tailEnd.GetChild(0).gameObject });
                     }
                     // FK : U
                     component.spearHealth -= num2;
                 }
             }
-            else if (mass.spearShot && !mass.tempSpear)
+            else if (__instance.mass.spearShot && !__instance.mass.tempSpear)
             {
-                mass.spearShot = false;
+                __instance.mass.spearShot = false;
             }
         }
         if (gameObject != null)
         {
-            if (gz == null)
+            if (__instance.gz == null)
             {
-                gz = GoreZone.ResolveGoreZone(__instance.transform);
+                __instance.gz = GoreZone.ResolveGoreZone(__instance.transform);
             }
             if (hurtPos != Vector3.zero)
             {
@@ -268,7 +233,7 @@ public static class StatusGetHurtPatch
             {
                 gameObject.transform.position = target.transform.position;
             }
-            if (eid.hitter == "drill")
+            if (__instance.eid.hitter == "drill")
             {
                 gameObject.transform.localScale *= 2f;
             }
@@ -276,15 +241,15 @@ public static class StatusGetHurtPatch
             {
                 gameObject.transform.localScale *= 2f;
             }
-            if (gz != null && gz.goreZone != null)
+            if (__instance.gz != null && __instance.gz.goreZone != null)
             {
-                gameObject.transform.SetParent(gz.goreZone, true);
+                gameObject.transform.SetParent(__instance.gz.goreZone, true);
             }
             Bloodsplatter component2 = gameObject.GetComponent<Bloodsplatter>();
             if (component2)
             {
                 ParticleSystem.CollisionModule collision = component2.GetComponent<ParticleSystem>().collision;
-                if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone" || eid.hitter == "explosion")
+                if (__instance.eid.hitter == "shotgun" || __instance.eid.hitter == "shotgunzone" || __instance.eid.hitter == "explosion")
                 {
                     if (UnityEngine.Random.Range(0f, 1f) > 0.5f)
                     {
@@ -292,64 +257,64 @@ public static class StatusGetHurtPatch
                     }
                     component2.hpAmount = 3;
                 }
-                else if (eid.hitter == "nail")
+                else if (__instance.eid.hitter == "nail")
                 {
                     component2.hpAmount = 1;
                     component2.GetComponent<AudioSource>().volume *= 0.8f;
                 }
-                if (!noheal)
+                if (!__instance.noheal)
                 {
                     component2.GetReady();
                 }
             }
         }
-        if (eid && eid.hitter == "punch")
+        if (__instance.eid && __instance.eid.hitter == "punch")
         {
             bool flag3 = __instance.parryables != null && __instance.parryables.Count > 0 && __instance.parryables.Contains(target.transform);
-            if (__instance.parryable || (__instance.partiallyParryable && (flag3 || (parryFramesLeft > 0 && parryFramesOnPartial))))
+            if (__instance.parryable || (__instance.partiallyParryable && (flag3 || (__instance.parryFramesLeft > 0 && __instance.parryFramesOnPartial))))
             {
                 __instance.parryable = false;
                 __instance.partiallyParryable = false;
                 __instance.parryables.Clear();
-                if (!InvincibleEnemies.Enabled && !eid.blessed)
+                if (!InvincibleEnemies.Enabled && !__instance.eid.blessed)
                 {
                     num2 = 5f;
                 }
-                if (!eid.blessed && !InvincibleEnemies.Enabled)
+                if (!__instance.eid.blessed && !InvincibleEnemies.Enabled)
                 {
                     //this.health -= num2;
                 }
-                MonoSingleton<FistControl>.Instance.currentPunch.Parry(true, eid, "");
+                MonoSingleton<FistControl>.Instance.currentPunch.Parry(true, __instance.eid, "");
                 __instance.SendMessage("GotParried", SendMessageOptions.DontRequireReceiver);
             }
             else
             {
-                parryFramesOnPartialField.SetValue(__instance, flag3);
-                parryFramesLeftField.SetValue(__instance, MonoSingleton<FistControl>.Instance.currentPunch.activeFrames);
+                __instance.parryFramesOnPartial = flag3;
+                __instance.parryFramesLeft = MonoSingleton<FistControl>.Instance.currentPunch.activeFrames;
             }
         }
-        if (flag2 && (num2 >= 1f || (eid.hitter == "shotgun" && UnityEngine.Random.Range(0f, 1f) > 0.5f) || (eid.hitter == "nail" && UnityEngine.Random.Range(0f, 1f) > 0.85f)))
+        if (flag2 && (num2 >= 1f || (__instance.eid.hitter == "shotgun" && UnityEngine.Random.Range(0f, 1f) > 0.5f) || (__instance.eid.hitter == "nail" && UnityEngine.Random.Range(0f, 1f) > 0.85f)))
         {
             if (__instance.extraDamageMultiplier >= 2f)
             {
-                gameObject = bsm.GetGore(GoreType.Head, eid, fromExplosion);
+                gameObject = __instance.bsm.GetGore(GoreType.Head, __instance.eid, fromExplosion);
             }
             else
             {
-                gameObject = bsm.GetGore(GoreType.Limb, eid, fromExplosion);
+                gameObject = __instance.bsm.GetGore(GoreType.Limb, __instance.eid, fromExplosion);
             }
             if (gameObject)
             {
                 gameObject.transform.position = target.transform.position;
-                if (gz != null && gz.goreZone != null)
+                if (__instance.gz != null && __instance.gz.goreZone != null)
                 {
-                    gameObject.transform.SetParent(gz.goreZone, true);
+                    gameObject.transform.SetParent(__instance.gz.goreZone, true);
                 }
                 Bloodsplatter component3 = gameObject.GetComponent<Bloodsplatter>();
                 if (component3)
                 {
                     ParticleSystem.CollisionModule collision2 = component3.GetComponent<ParticleSystem>().collision;
-                    if (eid.hitter == "shotgun" || eid.hitter == "shotgunzone" || eid.hitter == "explosion")
+                    if (__instance.eid.hitter == "shotgun" || __instance.eid.hitter == "shotgunzone" || __instance.eid.hitter == "explosion")
                     {
                         if (UnityEngine.Random.Range(0f, 1f) > 0.5f)
                         {
@@ -357,63 +322,63 @@ public static class StatusGetHurtPatch
                         }
                         component3.hpAmount = 3;
                     }
-                    else if (eid.hitter == "nail")
+                    else if (__instance.eid.hitter == "nail")
                     {
                         component3.hpAmount = 1;
                         component3.GetComponent<AudioSource>().volume *= 0.8f;
                     }
-                    if (!noheal)
+                    if (!__instance.noheal)
                     {
                         component3.GetReady();
                     }
                 }
             }
         }
-        if (__instance.health > 0f && __instance.hurtSounds.Length != 0 && !eid.blessed)
+        if (__instance.health > 0f && __instance.hurtSounds.Length != 0 && !__instance.eid.blessed)
         {
-            if (aud == null)
+            if (__instance.aud == null)
             {
-                aud = __instance.GetComponent<AudioSource>();
+                __instance.aud = __instance.GetComponent<AudioSource>();
             }
-            aud.clip = __instance.hurtSounds[UnityEngine.Random.Range(0, __instance.hurtSounds.Length)];
-            aud.volume = 0.75f;
-            aud.pitch = UnityEngine.Random.Range(0.85f, 1.35f);
-            aud.priority = 12;
-            aud.Play();
+            __instance.aud.clip = __instance.hurtSounds[UnityEngine.Random.Range(0, __instance.hurtSounds.Length)];
+            __instance.aud.volume = 0.75f;
+            __instance.aud.pitch = UnityEngine.Random.Range(0.85f, 1.35f);
+            __instance.aud.priority = 12;
+            __instance.aud.Play();
         }
-        if (multiplier == 0f || eid.puppet)
+        if (multiplier == 0f || __instance.eid.puppet)
         {
             flag = false;
         }
-        if (flag && eid.hitter != "enemy")
+        if (flag && __instance.eid.hitter != "enemy")
         {
-            if (scalc == null)
+            if (__instance.scalc == null)
             {
-                scalc = MonoSingleton<StyleCalculator>.Instance;
+                __instance.scalc = MonoSingleton<StyleCalculator>.Instance;
             }
             MinosArm component4 = __instance.GetComponent<MinosArm>();
             if (__instance.health <= 0f && !component4)
             {
                 dead = true;
-                if (gc && !gc.onGround && !eid.flying)
+                if (__instance.gc && !__instance.gc.onGround && !__instance.eid.flying)
                 {
-                    if (eid.hitter == "explosion" || eid.hitter == "ffexplosion" || eid.hitter == "railcannon")
+                    if (__instance.eid.hitter == "explosion" || __instance.eid.hitter == "ffexplosion" || __instance.eid.hitter == "railcannon")
                     {
-                        scalc.shud.AddPoints(120, "ultrakill.fireworks", sourceWeapon, eid, -1, "", "");
+                        __instance.scalc.shud.AddPoints(120, "ultrakill.fireworks", sourceWeapon, __instance.eid, -1, "", "");
                     }
-                    else if (eid.hitter == "ground slam")
+                    else if (__instance.eid.hitter == "ground slam")
                     {
-                        scalc.shud.AddPoints(160, "ultrakill.airslam", sourceWeapon, eid, -1, "", "");
+                        __instance.scalc.shud.AddPoints(160, "ultrakill.airslam", sourceWeapon, __instance.eid, -1, "", "");
                     }
-                    else if (eid.hitter != "deathzone")
+                    else if (__instance.eid.hitter != "deathzone")
                     {
-                        scalc.shud.AddPoints(50, "ultrakill.airshot", sourceWeapon, eid, -1, "", "");
+                        __instance.scalc.shud.AddPoints(50, "ultrakill.airshot", sourceWeapon, __instance.eid, -1, "", "");
                     }
                 }
             }
-            if (eid.hitter != "secret" && scalc)
+            if (__instance.eid.hitter != "secret" && __instance.scalc)
             {
-                scalc.HitCalculator(eid.hitter, "spider", hitLimb, dead, eid, sourceWeapon);
+                __instance.scalc.HitCalculator(__instance.eid.hitter, "spider", hitLimb, dead, __instance.eid, sourceWeapon);
             }
         }
         if ((__instance.woundedMaterial || __instance.woundedModel) && num >= __instance.originalHealth / 2f && __instance.health < __instance.originalHealth / 2f)
@@ -422,7 +387,7 @@ public static class StatusGetHurtPatch
             {
                 UnityEngine.Object.Instantiate<GameObject>(__instance.woundedParticle, __instance.chest.transform.position, Quaternion.identity);
             }
-            if (!eid.puppet)
+            if (!__instance.eid.puppet)
             {
                 if (__instance.woundedModel)
                 {

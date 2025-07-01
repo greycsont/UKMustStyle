@@ -16,7 +16,7 @@
   <!-- Game's instruction set -->
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>$(ManagedDir)\Assembly-CSharp.dll</HintPath>
+      <HintPath>libs\Assembly-CSharp_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
 

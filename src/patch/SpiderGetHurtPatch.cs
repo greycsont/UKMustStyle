@@ -51,37 +51,6 @@ public static class SpiderGetHurtPatch
                                       ref GameObject sourceWeapon,
                                       SpiderBody __instance)
     {
-        // Access private variable
-        var eidField = AccessTools.Field(typeof(SpiderBody), "eid");
-        var eid = eidField.GetValue(__instance) as EnemyIdentifier;
-
-        var gzField = AccessTools.Field(typeof(SpiderBody), "gz");
-        var gz = gzField.GetValue(__instance) as GoreZone;
-
-        var currentDripField = AccessTools.Field(typeof(SpiderBody), "currentDrip");
-        var currentDrip = currentDripField.GetValue(__instance) as GameObject;
-
-        var scalcField = AccessTools.Field(typeof(SpiderBody), "scalc");
-        var scalc = scalcField.GetValue(__instance) as StyleCalculator;
-
-        var parryableField = AccessTools.Field(typeof(SpiderBody), "parryable");
-        var parryable = parryableField.GetValue(__instance) as bool? ?? false;
-
-        var currentExplosionField = AccessTools.Field(typeof(SpiderBody), "currentExplosion");
-        var currentExplosion = currentExplosionField.GetValue(__instance) as GameObject;
-
-        var beamExplosionField = AccessTools.Field(typeof(SpiderBody), "beamExplosion");
-        var beamExplosion = beamExplosionField.GetValue(__instance) as AssetReference;
-
-        var parryFramesLeftField = AccessTools.Field(typeof(SpiderBody), "parryFramesLeft");
-        var parryFramesLeft = parryFramesLeftField.GetValue(__instance) as int?;
-
-        var maxHealthField = AccessTools.Field(typeof(SpiderBody), "maxHealth");
-        var maxHealth = maxHealthField.GetValue(__instance) as float?;
-
-        var ensimsField = AccessTools.Field(typeof(SpiderBody), "ensims");
-        var ensims = ensimsField.GetValue(__instance) as EnemySimplifier[];
-
         //method start
 
         bool dead = false;
@@ -91,20 +60,20 @@ public static class SpiderGetHurtPatch
             hitPoint = target.transform.position;
         }
         bool goreOn = MonoSingleton<BloodsplatterManager>.Instance.goreOn;
-        if (eid == null)
+        if (__instance.eid == null)
         {
-            eid = __instance.GetComponent<EnemyIdentifier>();
+            __instance.eid = __instance.GetComponent<EnemyIdentifier>();
         }
-        if (eid.hitter != "fire")
+        if (__instance.eid.hitter != "fire")
         {
-            if (!eid.sandified && !eid.blessed)
+            if (!__instance.eid.sandified && !__instance.eid.blessed)
             {
-                GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(MonoSingleton<BloodsplatterManager>.Instance.GetGore(GoreType.Small, eid, false), hitPoint, Quaternion.identity);
+                GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(MonoSingleton<BloodsplatterManager>.Instance.GetGore(GoreType.Small, __instance.eid, false), hitPoint, Quaternion.identity);
                 if (gameObject)
                 {
                     Bloodsplatter component = gameObject.GetComponent<Bloodsplatter>();
-                    gameObject.transform.SetParent(gz.goreZone, true);
-                    if (eid.hitter == "drill")
+                    gameObject.transform.SetParent(__instance.gz.goreZone, true);
+                    if (__instance.eid.hitter == "drill")
                     {
                         gameObject.transform.localScale *= 2f;
                     }
@@ -112,7 +81,7 @@ public static class SpiderGetHurtPatch
                     {
                         component.GetReady();
                     }
-                    if (eid.hitter == "nail")
+                    if (__instance.eid.hitter == "nail")
                     {
                         component.hpAmount = 3;
                         component.GetComponent<AudioSource>().volume *= 0.8f;
@@ -126,60 +95,60 @@ public static class SpiderGetHurtPatch
                         gameObject.GetComponent<ParticleSystem>().Play();
                     }
                 }
-                if (eid.hitter != "shotgun" && eid.hitter != "drill" && __instance.gameObject.activeInHierarchy)
+                if (__instance.eid.hitter != "shotgun" && __instance.eid.hitter != "drill" && __instance.gameObject.activeInHierarchy)
                 {
                     if (__instance.dripBlood != null)
                     {
-                        currentDrip = UnityEngine.Object.Instantiate<GameObject>(__instance.dripBlood, hitPoint, Quaternion.identity);
+                        __instance.currentDrip = UnityEngine.Object.Instantiate<GameObject>(__instance.dripBlood, hitPoint, Quaternion.identity);
                     }
-                    if (currentDrip)
+                    if (__instance.currentDrip)
                     {
-                        currentDrip.transform.parent = __instance.transform;
-                        currentDrip.transform.LookAt(__instance.transform);
-                        currentDrip.transform.Rotate(180f, 180f, 180f);
+                        __instance.currentDrip.transform.parent = __instance.transform;
+                        __instance.currentDrip.transform.LookAt(__instance.transform);
+                        __instance.currentDrip.transform.Rotate(180f, 180f, 180f);
                         if (goreOn)
                         {
-                            currentDrip.GetComponent<ParticleSystem>().Play();
+                            __instance.currentDrip.GetComponent<ParticleSystem>().Play();
                         }
                     }
                 }
             }
             else
             {
-                UnityEngine.Object.Instantiate<GameObject>(MonoSingleton<BloodsplatterManager>.Instance.GetGore(GoreType.Small, eid, false), hitPoint, Quaternion.identity);
+                UnityEngine.Object.Instantiate<GameObject>(MonoSingleton<BloodsplatterManager>.Instance.GetGore(GoreType.Small, __instance.eid, false), hitPoint, Quaternion.identity);
             }
         }
-        if (!eid.dead)
+        if (!__instance.eid.dead)
         {
-            if (!eid.blessed && !InvincibleEnemies.Enabled)
+            if (!__instance.eid.blessed && !InvincibleEnemies.Enabled)
             {
                 //this.health -= 1f * multiplier;
             }
-            if (scalc == null)
+            if (__instance.scalc == null)
             {
                 // If it follow the original code it will initialize once again(
-                scalc = MonoSingleton<StyleCalculator>.Instance;
+                __instance.scalc = MonoSingleton<StyleCalculator>.Instance;
             }
             if (__instance.health <= 0f)
             {
                 dead = true;
             }
-            if (((eid.hitter == "shotgunzone" || eid.hitter == "hammerzone") && parryable) || eid.hitter == "punch")
+            if (((__instance.eid.hitter == "shotgunzone" || __instance.eid.hitter == "hammerzone") && __instance.parryable) || __instance.eid.hitter == "punch")
             {
-                if (parryable)
+                if (__instance.parryable)
                 {
-                    parryableField.SetValue(__instance, false);
-                    MonoSingleton<FistControl>.Instance.currentPunch.Parry(false, eid, "");
-                    currentExplosion = UnityEngine.Object.Instantiate<GameObject>(beamExplosion.ToAsset(), __instance.transform.position, Quaternion.identity);
-                    if (!InvincibleEnemies.Enabled && !eid.blessed)
+                    __instance.parryable = false;
+                    MonoSingleton<FistControl>.Instance.currentPunch.Parry(false, __instance.eid, "");
+                    __instance.currentExplosion = UnityEngine.Object.Instantiate<GameObject>(__instance.beamExplosion.ToAsset(), __instance.transform.position, Quaternion.identity);
+                    if (!InvincibleEnemies.Enabled && !__instance.eid.blessed)
                     {
                         //this.health -= (float)((this.parryFramesLeft > 0) ? 4 : 5) / this.eid.totalHealthModifier;
                     }
-                    foreach (Explosion explosion in currentExplosion.GetComponentsInChildren<Explosion>())
+                    foreach (Explosion explosion in __instance.currentExplosion.GetComponentsInChildren<Explosion>())
                     {
-                        explosion.speed *= eid.totalDamageModifier;
-                        explosion.maxSize *= 1.75f * eid.totalDamageModifier;
-                        explosion.damage = Mathf.RoundToInt(50f * eid.totalDamageModifier);
+                        explosion.speed *= __instance.eid.totalDamageModifier;
+                        explosion.maxSize *= 1.75f * __instance.eid.totalDamageModifier;
+                        explosion.damage = Mathf.RoundToInt(50f * __instance.eid.totalDamageModifier);
                         explosion.canHit = AffectedSubjects.EnemiesOnly;
                         explosion.friendlyFire = true;
                     }
@@ -189,27 +158,27 @@ public static class SpiderGetHurtPatch
                         __instance.Invoke("StopWaiting", 1f);
                         UnityEngine.Object.Destroy(__instance.currentCE);
                     }
-                    parryFramesLeftField.SetValue(__instance, 0);
+                    __instance.parryFramesLeft = 0;
                 }
                 else
                 {
-                    parryFramesLeftField.SetValue(__instance, MonoSingleton<FistControl>.Instance.currentPunch.activeFrames);
+                    __instance.parryFramesLeft = MonoSingleton<FistControl>.Instance.currentPunch.activeFrames;
                 }
             }
             if (multiplier != 0f)
             {
-                scalc.HitCalculator(eid.hitter, "spider", "", dead, eid, sourceWeapon);
+                __instance.scalc.HitCalculator(__instance.eid.hitter, "spider", "", dead, __instance.eid, sourceWeapon);
             }
-            if (num >= maxHealth / 2f && __instance.health < maxHealth / 2f)
+            if (num >= __instance.maxHealth / 2f && __instance.health < __instance.maxHealth / 2f)
             {
-                if (ensims == null || ensims.Length == 0)
+                if (__instance.ensims == null || __instance.ensims.Length == 0)
                 {
-                    ensims = __instance.GetComponentsInChildren<EnemySimplifier>();
+                    __instance.ensims = __instance.GetComponentsInChildren<EnemySimplifier>();
                 }
                 UnityEngine.Object.Instantiate<GameObject>(__instance.woundedParticle, __instance.transform.position, Quaternion.identity);
-                if (!eid.puppet)
+                if (!__instance.eid.puppet)
                 {
-                    foreach (EnemySimplifier enemySimplifier in ensims)
+                    foreach (EnemySimplifier enemySimplifier in __instance.ensims)
                     {
                         if (!enemySimplifier.ignoreCustomColor)
                         {
@@ -223,13 +192,13 @@ public static class SpiderGetHurtPatch
             {
                 __instance.hurtSound.PlayClipAtPoint(MonoSingleton<AudioMixerController>.Instance.goreGroup, __instance.transform.position, 12, 1f, 0.75f, UnityEngine.Random.Range(0.85f, 1.35f), AudioRolloffMode.Linear, 1f, 100f);
             }
-            if (__instance.health <= 0f && !eid.dead)
+            if (__instance.health <= 0f && !__instance.eid.dead)
             {
                 __instance.Die();
                 return;
             }
         }
-        else if (eid.hitter == "ground slam")
+        else if (__instance.eid.hitter == "ground slam")
         {
             __instance.BreakCorpse();
         }
